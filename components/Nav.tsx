@@ -39,6 +39,7 @@ export default function Nav({ onOpenChat }: { onOpenChat: () => void }) {
                 alt="Parker"
                 fill
                 className="object-contain object-left"
+                sizes="144px"
                 style={{ filter: scrolled ? "none" : "invert(1)" }}
                 priority
               />

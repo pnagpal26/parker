@@ -24,6 +24,7 @@ export default function Footer() {
                 src={PARKER_IMAGES.logo}
                 alt="Parker at Yonge + Eglinton — Luxury Rentals Toronto"
                 fill
+                sizes="144px"
                 className="object-contain object-left"
                 style={{ filter: "invert(1)" }}
               />
