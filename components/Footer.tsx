@@ -1,5 +1,13 @@
 import Image from "next/image";
 import { PARKER_IMAGES, PARKER_INFO } from "@/lib/parker-data";
+import ContactLink from "@/components/ContactLink";
+
+// base64-encoded — keeps contact info out of server-rendered HTML, away from scrapers
+const DIRECT = "NDE2MzEyNTI4Mg==";  // 4163125282
+const OFFICE = "NDE2NDk0NzY1Mw==";  // 4164947653
+const EMAIL  = "R2FyaW1hQFRlYW1OYWdwYWwuY2E="; // Garima@TeamNagpal.ca
+
+const linkStyle = { color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-body)" };
 
 export default function Footer() {
   return (
@@ -14,7 +22,7 @@ export default function Footer() {
             <div className="relative mb-5 h-[42px] w-36">
               <Image
                 src={PARKER_IMAGES.logo}
-                alt="Parker"
+                alt="Parker at Yonge + Eglinton — Luxury Rentals Toronto"
                 fill
                 className="object-contain object-left"
                 style={{ filter: "invert(1)" }}
@@ -68,31 +76,30 @@ export default function Footer() {
             </p>
             <address className="not-italic mt-4 space-y-2">
               <p>
-                <a
-                  href="tel:4163125282"
+                <ContactLink
+                  encoded={DIRECT}
+                  type="tel"
+                  prefix="Direct: "
                   className="text-sm transition-colors duration-200 hover:text-white"
-                  style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-body)" }}
-                >
-                  Direct: 416-312-5282
-                </a>
+                  style={linkStyle}
+                />
               </p>
               <p>
-                <a
-                  href="tel:4164947653"
+                <ContactLink
+                  encoded={OFFICE}
+                  type="tel"
+                  prefix="Office: "
                   className="text-sm transition-colors duration-200 hover:text-white"
-                  style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-body)" }}
-                >
-                  Office: 416-494-7653
-                </a>
+                  style={linkStyle}
+                />
               </p>
               <p>
-                <a
-                  href="mailto:Garima@TeamNagpal.ca"
+                <ContactLink
+                  encoded={EMAIL}
+                  type="email"
                   className="text-sm transition-colors duration-200 hover:text-white"
-                  style={{ color: "rgba(255,255,255,0.55)", fontFamily: "var(--font-body)" }}
-                >
-                  Garima@TeamNagpal.ca
-                </a>
+                  style={linkStyle}
+                />
               </p>
             </address>
           </div>

@@ -65,8 +65,10 @@ export default function Stats() {
   return (
     <section
       ref={ref as React.RefObject<HTMLElement>}
+      aria-label="Building Overview"
       style={{ background: "var(--warm-white)", borderBottom: "1px solid var(--border)" }}
     >
+      <h2 className="sr-only">Building Overview</h2>
       <div className="grid grid-cols-2 md:grid-cols-4">
         {PARKER_INFO.stats.map((stat, i) => (
           <StatItem key={i} stat={stat} index={i} />

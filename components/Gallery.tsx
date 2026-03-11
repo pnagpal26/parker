@@ -163,7 +163,7 @@ export default function Gallery() {
           >
             <Image
               src={src}
-              alt={`Thumb ${i + 1}`}
+              alt={`Parker — ${LABELS[i] || `Photo ${i + 1}`} thumbnail`}
               fill
               className="object-cover"
               sizes="76px"

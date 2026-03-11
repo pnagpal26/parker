@@ -2,6 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -33,6 +40,9 @@ const DOTS = (
   </span>
 );
 
+const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID;
+const GADS_CONVERSION_LABEL = process.env.NEXT_PUBLIC_GADS_CONVERSION_LABEL;
+
 export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -41,10 +51,14 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initialized = useRef(false);
+  const chatStartedFired = useRef(false);
 
   useEffect(() => {
     if (open && !initialized.current) {
       initialized.current = true;
+      // chat_opened event
+      window.gtag?.("event", "chat_opened", { event_category: "Parker Chatbot" });
+      window.fbq?.("track", "ViewContent", { content_name: "Parker Chat" });
       sendMessage("", true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,6 +80,11 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     if (!isWelcome) {
       setMessages(newMessages);
       setInput("");
+      // chat_started event — fire only on the first real user message
+      if (!chatStartedFired.current) {
+        chatStartedFired.current = true;
+        window.gtag?.("event", "chat_started", { event_category: "Parker Chatbot" });
+      }
     }
     setLoading(true);
 
@@ -104,6 +123,12 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
 
       if (fullText.includes("<lead_data>") && !leadCaptured) {
         setLeadCaptured(true);
+        // lead_captured events
+        window.gtag?.("event", "lead_captured", { event_category: "Parker Chatbot" });
+        if (GADS_ID && GADS_CONVERSION_LABEL) {
+          window.gtag?.("event", "conversion", { send_to: `${GADS_ID}/${GADS_CONVERSION_LABEL}` });
+        }
+        window.fbq?.("track", "Lead", { content_name: "Parker Suite Inquiry" });
       }
     } catch {
       setMessages((prev) => {
