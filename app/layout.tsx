@@ -19,7 +19,7 @@ const jakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const SITE_URL = "https://parker-wine.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://parker-wine.vercel.app";
 const OG_IMAGE = PARKER_IMAGES.hero;
 
 export const metadata: Metadata = {

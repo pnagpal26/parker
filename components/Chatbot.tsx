@@ -91,18 +91,19 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     const assistantPlaceholder: Message = { role: "assistant", content: "" };
     setMessages((prev) => [...prev, assistantPlaceholder]);
 
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-
     const toSend = isWelcome
       ? [{ role: "user", content: "Hello, I'm interested in Parker." }]
       : newMessages;
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: toSend }),
-      });
+      const [res] = await Promise.all([
+        fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: toSend }),
+        }),
+        new Promise((resolve) => setTimeout(resolve, 2500)),
+      ]);
 
       if (!res.ok) throw new Error("Chat request failed");
       const reader = res.body!.getReader();
