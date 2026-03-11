@@ -6,7 +6,7 @@
 
 2. **Hardcoded artificial delay** (`components/Chatbot.tsx`) — 2500ms `setTimeout` before each fetch is hardcoded. Not configurable, not skippable in tests.
 
-3. **Incomplete error handling** — Lead capture in `components/Chatbot.tsx` uses fire-and-forget `fetch('/api/lead', ...)` with no retry logic. If the POST fails, the lead is silently lost.
+3. **Incomplete error handling** — Lead capture in `components/Chatbot.tsx` uses fire-and-forget `fetch('/api/lead', ...)` with no retry logic. If the POST fails, the lead is silently lost. *(Note: the `/api/lead` route itself awaits all downstream calls — the fire-and-forget here is only the client→API leg.)*
 
 4. **Regex-based lead extraction** — `<lead_data>{...}</lead_data>` parsing in the chat stream relies on regex string matching. Fragile if Claude's output deviates slightly from expected format.
 
@@ -18,11 +18,15 @@
 
 2. **Redundant transcript cleaning** — Transcript is formatted twice: once in `Chatbot.tsx` before POSTing, and potentially again in `/api/lead`. Could cause double-processing or subtle formatting inconsistencies.
 
+~~**Input focus lost after Emma responds**~~ — *Fixed 2026-03-11. `useEffect` on `loading` now re-focuses the input after each response.*
+
+~~**FUB note not received (fire-and-forget killed by Vercel)**~~ — *Fixed 2026-03-11. `createFUBNote()` is now `await`ed before the `/api/lead` response is returned.*
+
 ## Security Considerations
 
 1. **Bot UA filter is weak** — Regex pattern in `app/api/chat/route.ts` can be easily bypassed by setting a browser-like UA. Provides minimal real protection.
 
-2. **No request signing** — `/api/lead` endpoint has no authentication. Any actor who discovers the endpoint can POST fake leads directly.
+2. **No request signing** — `/api/lead` endpoint has no authentication. Any actor who discovers the endpoint can POST fake leads directly. *(Bogus data validation — 2026-03-11 — partially mitigates spam leads, but doesn't prevent targeted abuse.)*
 
 3. **Base64 obfuscation** — Contact info in `components/Footer.tsx` uses `atob()` for scrape protection, not encryption. Determined scrapers running JS will still extract it.
 

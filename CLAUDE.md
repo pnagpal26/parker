@@ -91,6 +91,7 @@ Both `Nav` and `Hero` call `onOpenChat()` from their CTAs.
 - One question at a time
 - 1–3 sentences per response
 - 2500ms artificial delay before fetch (human-like pacing)
+- Input auto-refocuses after every Emma response (via `useEffect` on `loading`)
 - Collects 6 fields: name, email, phone, move-in date, suite type, budget
 - On collecting all 6, outputs `<lead_data>{...}</lead_data>` which auto-fires lead capture
 - Signs off: *"I'll pass your details along to our team — Garima will reach out personally to confirm your tour time."*
@@ -130,6 +131,11 @@ Chatbot → /api/chat (streaming, Claude)
 }
 ```
 
+**`/api/lead` validation (before hitting FUB/Resend):**
+- Missing email → 400
+- Bogus email (disposable domain, all-same-char local part) → 422 `{ reason: "bogus_email" }`
+- Bogus phone (all-same digit, sequential, < 7 digits) → 422 `{ reason: "bogus_phone" }`
+
 **FUB note format:**
 ```
 === Parker Chatbot Transcript ===
@@ -137,6 +143,8 @@ Chatbot → /api/chat (streaming, Claude)
 Prospect: Hi there
 Emma: Welcome to Parker...
 ```
+
+> **Important:** `createFUBNote()` is `await`ed before the response is returned. Fire-and-forget causes Vercel to kill the request before the note fetch completes.
 
 ---
 
@@ -343,6 +351,15 @@ Three layers, in order:
    - `messages` is not an array or is empty → 400
    - `messages.length > 30` → 400
    - Any message has non-string `role`/`content`, or `content.length > 1000` → 400
+
+### Lead API bogus data rejection (`app/api/lead/route.ts`)
+
+Runs before any external call (FUB / Resend). Returns 422 with a `reason` field.
+
+- **`isBogusEmail`** — rejects known disposable domains (`mailinator.com`, `guerrillamail.com`, `temp-mail.org`, `trashmail.com`, `yopmail.com`, `sharklasers.com`, `throwaway.email`, `test.com`, `fake.com`, `example.com`) and local parts consisting entirely of one repeated character (e.g. `aaa@...`).
+- **`isBogusPhone`** — rejects numbers with < 7 digits, all-same-digit patterns (e.g. `4161111111`), and simple sequences (`1234567890` / `0987654321`).
+
+Emma's system prompt also prompts for re-confirmation when it detects these patterns conversationally — the API check is the hard backstop.
 
 ### Contact info scrape protection
 
