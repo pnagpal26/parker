@@ -17,13 +17,19 @@ npm run lint     # ESLint
 > Scripts use `node node_modules/next/dist/bin/next` directly — the `.bin/next` symlink has a broken require path in this install.
 
 ### Deployment
-No git repo. Deploy via Vercel CLI:
+
+Git repo: `https://github.com/pnagpal26/parker` (branch: `main`)
+
 ```bash
+git add <files>
+git commit -m "..."
+git push
 vercel --prod --yes
 ```
+
 Live URL: **https://parker-wine.vercel.app**
 Vercel project: `pauls-projects-c6c6e753/parker`
-Always set up git first before deploying — `git commit` then push, then `vercel --prod`.
+Always commit + push to GitHub before deploying to Vercel.
 
 ---
 
@@ -129,7 +135,85 @@ Emma: Welcome to Parker...
 
 ---
 
-## Hero Component (`components/Hero.tsx`)
+## Analytics & Tracking
+
+Traffic strategy is dual: **organic search (Google)** + **paid social (Instagram/Facebook ads)**.
+
+### Meta Pixel (`app/layout.tsx`)
+
+Injected via `<Script strategy="afterInteractive">` when `NEXT_PUBLIC_META_PIXEL_ID` is set.
+
+| Event | When |
+|-------|------|
+| `PageView` | Every page load (automatic) |
+| `ViewContent` | User opens the chatbot |
+| `Lead` | `<lead_data>` detected — lead fully captured |
+
+### Google Analytics 4 + Google Ads (`app/layout.tsx`)
+
+Injected via `<Script strategy="afterInteractive">` when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set.
+Google Ads remarketing tag also loaded if `NEXT_PUBLIC_GADS_ID` is set.
+
+### Chatbot Funnel Events (`components/Chatbot.tsx`)
+
+Three events fire at distinct points for audience segmentation:
+
+| GA4 Event | When fired | Builds this audience |
+|-----------|-----------|----------------------|
+| `chat_opened` | Any "Chat with Emma" / "Book a Tour" CTA clicked | Everyone who showed intent |
+| `chat_started` | User sends their first message | Engaged but didn't convert |
+| `lead_captured` | `<lead_data>` detected in stream | Converted — suppress from retargeting |
+
+Google Ads conversion fires at `lead_captured` via `send_to: GADS_ID/GADS_CONVERSION_LABEL`.
+
+**Retargeting strategy:**
+- Warm audience: `chat_opened` fired, `lead_captured` NOT fired → retarget with "pick up where you left off" ad
+- Hot audience: `chat_started` fired, `lead_captured` NOT fired → higher-value retarget
+- Suppression list: `lead_captured` fired → exclude from all ads
+
+All scripts are conditionally rendered — if the env var is absent, the script is silently skipped. No errors in dev.
+
+---
+
+## SEO
+
+### Metadata (`app/layout.tsx`)
+
+Set via Next.js `Metadata` API:
+- `og:image` → `PARKER_IMAGES.hero` (fitzrovia.ca CDN, 1920×1080)
+- `og:type` → `"website"`, `og:url`, `og:locale: "en_CA"`
+- `twitter:card` → `"summary_large_image"`
+- `canonical` → `https://parker-wine.vercel.app`
+- `robots` → `index, follow`
+
+### JSON-LD Structured Data (`app/layout.tsx`)
+
+Injected as `<script type="application/ld+json">` in `<head>`. Two schema types:
+
+- **`LocalBusiness` + `ApartmentComplex`** — name, address, geo, phone, amenities, broker (Garima Nagpal / RE/MAX Hallmark Realty)
+- **`AggregateOffer`** — price range sourced from `PARKER_PRICING`, currency CAD
+
+Data is sourced live from `PARKER_INFO` and `PARKER_PRICING` — update the data file and structured data updates automatically.
+
+### Sitemap + Robots
+
+- `app/sitemap.ts` → serves `/sitemap.xml` (Next.js App Router native)
+- `app/robots.ts` → serves `/robots.txt`, allows `/`, disallows `/api/`
+
+### Verification URLs
+
+| Check | URL |
+|-------|-----|
+| OG tags | https://developers.facebook.com/tools/debug/ |
+| Structured data | https://validator.schema.org/ |
+| Sitemap | https://parker-wine.vercel.app/sitemap.xml |
+| Robots | https://parker-wine.vercel.app/robots.txt |
+
+---
+
+## Components
+
+### Hero (`components/Hero.tsx`)
 
 Two completely separate layouts — no shared markup:
 
@@ -142,35 +226,43 @@ Two completely separate layouts — no shared markup:
 - Left: PARKER wordmark + tagline + "Book a Private Tour" button
 - Right: frosted glass panel — "Move In / Today" + 6 incentives list + "Chat with Emma to book your tour →"
 
----
-
-## Nav Component (`components/Nav.tsx`)
+### Nav (`components/Nav.tsx`)
 
 - Logo: `h-[42px] w-36` (50% larger than original)
 - "Presented by / Garima Nagpal" text to the right of logo with divider
-- Both adapt colour based on `scrolled` state (white on hero, dark on scroll)
+- Adapts colour based on `scrolled` state (white on hero, dark on scroll)
 - "Book a Tour" button → calls `onOpenChat()`
 - Mobile menu: "Book a Tour" → calls `onOpenChat()` + closes menu
 
----
+### Stats (`components/Stats.tsx`)
 
-## Incentives Component (`components/Incentives.tsx`)
+- Wrapped in `<section aria-label="Building Overview">` with sr-only `<h2>` for accessibility/SEO
+- 4 animated count-up stats: Location, Area, Storeys, Suites
 
-Displayed between Stats and About. Contains:
+### Incentives (`components/Incentives.tsx`)
+
+Displayed between Stats and About. `id="incentives"` for anchor linking. Contains:
 - 4 pricing cards — net effective is the hero number, list price is secondary fine print
 - "What's Included" list with 6 perks + icons
 - "Book a Private Tour" CTA panel → "Chat with Emma" button
 
----
+### Gallery (`components/Gallery.tsx`)
 
-## Footer (`components/Footer.tsx`)
+- Full-width image carousel with thumbnail strip
+- Thumbnail `alt` text: `"Parker — {LABELS[i]} thumbnail"` (descriptive for SEO/a11y)
+
+### Footer (`components/Footer.tsx`)
 
 3-column grid:
-1. Parker logo + tagline
+1. Parker logo + tagline (`alt="Parker at Yonge + Eglinton — Luxury Rentals Toronto"`)
 2. Building address only (no phone/email for Parker)
-3. Garima Nagpal · RE/MAX Hallmark Realty · Direct: 416-312-5282 · Office: 416-494-7653 · Garima@TeamNagpal.ca
+3. Garima Nagpal · RE/MAX Hallmark Realty · Direct · Office · Email
 
-Bottom bar: copyright + "Presented by Garima Nagpal · RE/MAX Hallmark Realty"
+Contact info (phone numbers, email) is **base64-encoded** in the source and decoded client-side via `<ContactLink>`. This keeps contact details out of server-rendered HTML to prevent scraping.
+
+### ContactLink (`components/ContactLink.tsx`)
+
+Client component. Takes a `base64`-encoded phone/email string, decodes it with `atob()` in `useEffect`, and renders an `<a href="tel:...">` or `<a href="mailto:...">`. Server renders a placeholder `<span>` — no contact data in initial HTML.
 
 ---
 
@@ -201,15 +293,22 @@ All paths in `PARKER_IMAGES` in `lib/parker-data.ts`.
 ## Environment Variables
 
 ```
-ANTHROPIC_API_KEY=        # Claude API (required for chat)
-RESEND_API_KEY=           # Resend email (required for lead emails)
-FUB_API_KEY=              # Follow Up Boss (required for CRM)
+# Core (required)
+ANTHROPIC_API_KEY=              # Claude API
+RESEND_API_KEY=                 # Resend email
+FUB_API_KEY=                    # Follow Up Boss CRM
 RESEND_FROM_EMAIL=noreply@teamnagpal.ca
+
+# Analytics & Tracking (optional — scripts skipped if unset, no dev errors)
+NEXT_PUBLIC_META_PIXEL_ID=              # Meta Business Manager → Events Manager
+NEXT_PUBLIC_GA_MEASUREMENT_ID=          # GA4 → Admin → Data Streams (G-XXXXXXXX)
+NEXT_PUBLIC_GADS_ID=                    # Google Ads remarketing tag (AW-XXXXXXXX)
+NEXT_PUBLIC_GADS_CONVERSION_LABEL=      # Google Ads conversion action label
 ```
 
 Copy `.env.local.example` → `.env.local`. Resend is lazy-initialized inside functions to avoid build-time errors when key is absent.
 
-All 4 vars are already set in Vercel production.
+Core vars + analytics vars are all set in Vercel production.
 
 ---
 
@@ -219,6 +318,8 @@ All 4 vars are already set in Vercel production.
 |-------|--------|------|---------|
 | `/api/chat` | POST | `{ messages }` | Streaming `text/plain` (Claude) |
 | `/api/lead` | POST | lead fields + transcript | `{ success, email, fub }` |
+| `/sitemap.xml` | GET | — | XML sitemap (Next.js native) |
+| `/robots.txt` | GET | — | Robots file (Next.js native) |
 
 ---
 
