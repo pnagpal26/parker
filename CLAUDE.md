@@ -228,8 +228,8 @@ Two completely separate layouts — no shared markup:
 
 ### Nav (`components/Nav.tsx`)
 
-- Logo: `h-[42px] w-36` (50% larger than original)
-- "Presented by / Garima Nagpal" text to the right of logo with divider
+- Logo: `h-[42px] w-36` (50% larger than original), `sizes="144px"` on the Image
+- "Presented by / Garima Nagpal" text to the right of logo with divider — visible on **all** screen sizes (not just `sm:`)
 - Adapts colour based on `scrolled` state (white on hero, dark on scroll)
 - "Book a Tour" button → calls `onOpenChat()`
 - Mobile menu: "Book a Tour" → calls `onOpenChat()` + closes menu
@@ -320,6 +320,27 @@ Core vars + analytics vars are all set in Vercel production.
 | `/api/lead` | POST | lead fields + transcript | `{ success, email, fub }` |
 | `/sitemap.xml` | GET | — | XML sitemap (Next.js native) |
 | `/robots.txt` | GET | — | Robots file (Next.js native) |
+
+---
+
+## Security
+
+### Chat API bot protection (`app/api/chat/route.ts`)
+
+Three layers, in order:
+
+1. **Bot user-agent block** — Rejects requests where `User-Agent` is absent or matches known scrapers/bots (`bot|crawler|spider|scrapy|python-requests|axios|curl|wget|headless`). Returns 403.
+
+2. **IP rate limiting** — In-memory map keyed by client IP (`x-forwarded-for` → `x-real-ip` → `"unknown"`). Allows 20 requests per 10-minute window per IP. Returns 429 when exceeded. Map is pruned every 5 minutes to prevent unbounded memory growth.
+
+3. **Message validation** — Rejects if:
+   - `messages` is not an array or is empty → 400
+   - `messages.length > 30` → 400
+   - Any message has non-string `role`/`content`, or `content.length > 1000` → 400
+
+### Contact info scrape protection
+
+Phone numbers and email are **never in server-rendered HTML**. They are stored as `base64` constants in `components/Footer.tsx` and decoded by `<ContactLink>` via `atob()` in `useEffect` (client-side only). Bots that don't execute JavaScript see only placeholder `<span>` elements.
 
 ---
 
