@@ -1,4 +1,8 @@
-# CLAUDE.md — Parker Landing Page
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Parker Landing Page
 
 Luxury rental landing page for **Parker at Yonge + Eglinton**, Toronto.
 Presented by **Garima Nagpal · Team Nagpal · RE/MAX Hallmark Realty**.
@@ -27,7 +31,7 @@ git push
 vercel --prod --yes
 ```
 
-Live URL: **https://parker-wine.vercel.app**
+Live URL: **https://parker.affordablecondos.ca**
 Vercel project: `pauls-projects-c6c6e753/parker`
 Always commit + push to GitHub before deploying to Vercel.
 
@@ -38,6 +42,7 @@ Always commit + push to GitHub before deploying to Vercel.
 - **Next.js 16.1.6** — App Router, TypeScript, Turbopack
 - **Tailwind CSS v4** — `@import "tailwindcss"` syntax, NO `tailwind.config.ts`
 - **`@anthropic-ai/sdk`** — Claude streaming (`claude-sonnet-4-6`)
+- **`ai` (Vercel AI SDK)** — streaming utilities used in chat route
 - **`resend`** — transactional email to garima@teamnagpal.ca
 - **Follow Up Boss (FUB)** — CRM lead creation + transcript note
 
@@ -183,7 +188,7 @@ Set via Next.js `Metadata` API:
 - `og:image` → `PARKER_IMAGES.hero` (fitzrovia.ca CDN, 1920×1080)
 - `og:type` → `"website"`, `og:url`, `og:locale: "en_CA"`
 - `twitter:card` → `"summary_large_image"`
-- `canonical` → `https://parker-wine.vercel.app`
+- `canonical` → `https://parker.affordablecondos.ca`
 - `robots` → `index, follow`
 
 ### JSON-LD Structured Data (`app/layout.tsx`)
@@ -206,8 +211,8 @@ Data is sourced live from `PARKER_INFO` and `PARKER_PRICING` — update the data
 |-------|-----|
 | OG tags | https://developers.facebook.com/tools/debug/ |
 | Structured data | https://validator.schema.org/ |
-| Sitemap | https://parker-wine.vercel.app/sitemap.xml |
-| Robots | https://parker-wine.vercel.app/robots.txt |
+| Sitemap | https://parker.affordablecondos.ca/sitemap.xml |
+| Robots | https://parker.affordablecondos.ca/robots.txt |
 
 ---
 
@@ -304,6 +309,7 @@ NEXT_PUBLIC_META_PIXEL_ID=              # Meta Business Manager → Events Manag
 NEXT_PUBLIC_GA_MEASUREMENT_ID=          # GA4 → Admin → Data Streams (G-XXXXXXXX)
 NEXT_PUBLIC_GADS_ID=                    # Google Ads remarketing tag (AW-XXXXXXXX)
 NEXT_PUBLIC_GADS_CONVERSION_LABEL=      # Google Ads conversion action label
+NEXT_PUBLIC_SITE_URL=                   # Canonical URL (default: https://parker.affordablecondos.ca)
 ```
 
 Copy `.env.local.example` → `.env.local`. Resend is lazy-initialized inside functions to avoid build-time errors when key is absent.
@@ -341,6 +347,12 @@ Three layers, in order:
 ### Contact info scrape protection
 
 Phone numbers and email are **never in server-rendered HTML**. They are stored as `base64` constants in `components/Footer.tsx` and decoded by `<ContactLink>` via `atob()` in `useEffect` (client-side only). Bots that don't execute JavaScript see only placeholder `<span>` elements.
+
+---
+
+## Known Issues
+
+See `CONCERNS.md` for full tech debt, security considerations, and fragile areas.
 
 ---
 

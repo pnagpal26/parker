@@ -72,6 +72,10 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     if (open) setTimeout(() => inputRef.current?.focus(), 300);
   }, [open]);
 
+  useEffect(() => {
+    if (!loading && open) inputRef.current?.focus();
+  }, [loading, open]);
+
   const sendMessage = async (userText: string, isWelcome = false) => {
     const newMessages: Message[] = isWelcome
       ? []

@@ -78,7 +78,7 @@ Analytics (optional - scripts silently skipped if unset):
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` - Google Analytics 4 measurement ID (G-XXXXXXXX)
 - `NEXT_PUBLIC_GADS_ID` - Google Ads remarketing tag (AW-XXXXXXXX)
 - `NEXT_PUBLIC_GADS_CONVERSION_LABEL` - Google Ads conversion action label
-- `NEXT_PUBLIC_SITE_URL` - Canonical site URL (default: `https://parker-wine.vercel.app`)
+- `NEXT_PUBLIC_SITE_URL` - Canonical site URL (default: `https://parker.affordablecondos.ca`)
 
 **Build Configuration:**
 - `tsconfig.json` - TypeScript compilation (ES2017 target, strict mode)
