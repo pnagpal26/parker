@@ -186,6 +186,18 @@ Google Ads conversion fires at `lead_captured` via `send_to: GADS_ID/GADS_CONVER
 
 All scripts are conditionally rendered — if the env var is absent, the script is silently skipped. No errors in dev.
 
+### Live Tracking IDs (Production)
+
+| Service | ID |
+|---------|----|
+| Meta Pixel | `3255042007990556` |
+| GA4 | `G-3EFNE69Y89` |
+| Google Ads | `AW-860175244` |
+| Google Ads Conversion Label | `zFHzCN6Q0IYcEIz3lJoD` |
+| Google Ads Conversion Action | Parker Lead (Submit lead form, Count: One, 30-day window) |
+
+All four are set as Vercel environment variables in production. See `ADS-TRACKING-BRIEF.md` for the full brief to share with the ads team.
+
 ---
 
 ## SEO
