@@ -56,8 +56,7 @@ export async function createFUBLead(lead: LeadData): Promise<{ personId?: number
   }
 
   const data = await res.json();
-  console.log("FUB events response keys:", JSON.stringify(Object.keys(data)), "personId:", data.personId, "person.id:", data.person?.id);
-  return { personId: data.personId ?? data.person?.id ?? undefined };
+  return { personId: data.id ?? data.personId ?? data.person?.id ?? undefined };
 }
 
 export async function createFUBNote(personId: number, transcript: string): Promise<void> {
