@@ -1,219 +1,225 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-03-11
+**Analysis Date:** 2026-03-13
 
 ## Directory Layout
 
 ```
 parker/
-├── app/                           # Next.js App Router
+├── app/                        # Next.js App Router
 │   ├── api/
-│   │   ├── chat/route.ts         # Claude streaming endpoint
-│   │   └── lead/route.ts         # Lead capture → Resend + FUB
-│   ├── layout.tsx                # Root layout: metadata, OG, JSON-LD, analytics scripts
-│   ├── page.tsx                  # Homepage client component
-│   ├── robots.ts                 # Robots.txt generation
-│   ├── sitemap.ts                # Sitemap.xml generation
-│   └── globals.css               # Tailwind v4 directives, custom utilities
-├── components/                    # React client components
-│   ├── About.tsx                 # About section (text + exterior photo)
-│   ├── Amenities.tsx             # Amenities list + carousel
-│   ├── Chatbot.tsx               # Chat FAB + panel + message UI
-│   ├── ContactLink.tsx           # Base64-decoded tel/mailto links
-│   ├── Footer.tsx                # Logo + address + Garima contact
-│   ├── Gallery.tsx               # Image carousel with thumbnails
-│   ├── Hero.tsx                  # Full-screen hero (mobile/desktop layouts)
-│   ├── Incentives.tsx            # Pricing cards + perks list + CTA
-│   ├── LeadForm.tsx              # (Legacy; not currently used)
-│   ├── Nav.tsx                   # Fixed navbar + mobile menu
-│   └── Stats.tsx                 # Animated counter section
-├── lib/                           # Utilities & data
-│   ├── fub.ts                    # Follow Up Boss API integration
-│   ├── hooks.ts                  # useScrollReveal, useCountUp
-│   ├── parker-data.ts            # All content constants (single source of truth)
-│   └── resend.ts                 # Resend email client + LeadData type
-├── public/                        # Static assets (none committed; images from CDN)
-├── node_modules/                 # Dependencies
-├── .next/                         # Build output (ignored)
-├── .planning/                     # GSD mapping documents
-├── next.config.ts                # Next.js config (remote image patterns)
-├── tsconfig.json                 # TypeScript config
-├── package.json                  # Dependencies, scripts
-├── .env.local.example            # Environment variable template
-├── .gitignore                    # Excludes .env.local, .next, etc.
-└── CLAUDE.md                     # Project instructions
+│   │   ├── chat/route.ts       # Claude streaming endpoint
+│   │   └── lead/route.ts       # Lead capture endpoint
+│   ├── layout.tsx              # Root layout: metadata, scripts, fonts
+│   ├── page.tsx                # Home page: component composition + chatbot state
+│   ├── sitemap.ts              # /sitemap.xml
+│   ├── robots.ts               # /robots.txt
+│   └── globals.css             # Tailwind v4 @import, custom utilities, @source
+├── components/                 # React components
+│   ├── Nav.tsx                 # Header with logo + Book Tour CTA
+│   ├── Hero.tsx                # Full-screen hero (mobile + desktop layouts)
+│   ├── Stats.tsx               # 4-stat counter section
+│   ├── Incentives.tsx          # Pricing cards + perks list
+│   ├── About.tsx               # 2-col text + exterior photo
+│   ├── Amenities.tsx           # Numbered list + carousel
+│   ├── Gallery.tsx             # Image carousel + thumbnails
+│   ├── Footer.tsx              # Logo, address, contact (base64-encoded)
+│   ├── Chatbot.tsx             # Chat interface (controlled component)
+│   ├── LeadForm.tsx            # Legacy or internal form component
+│   └── ContactLink.tsx         # Client-only base64 decode for email/phone
+├── lib/                        # Utilities and data
+│   ├── parker-data.ts          # Central data store (content, pricing, images, system prompt)
+│   ├── resend.ts               # Resend email client
+│   └── fub.ts                  # Follow Up Boss API integration
+├── public/                     # Static assets (images, fonts, etc.)
+├── .next/                      # Build output (gitignored)
+├── node_modules/               # Dependencies (gitignored)
+├── tsconfig.json               # TypeScript config
+├── next.config.ts              # Next.js config (remotePatterns for fitzrovia.ca)
+├── package.json                # Dependencies, scripts
+├── CLAUDE.md                   # Project instructions for Claude
+├── .env.local                  # Environment variables (gitignored)
+├── .env.local.example          # Example env file
+└── .gitignore                  # Standard Next.js ignore rules
 ```
 
 ## Directory Purposes
 
 **app/:**
-- Purpose: Next.js App Router directory; defines routes and layouts
-- Contains: Server components (layout), client components (page), API routes, metadata
-- Key files: `page.tsx` (entry point), `layout.tsx` (root metadata), `globals.css` (styling)
+- Purpose: Next.js App Router pages and API routes
+- Contains: Page components, API handlers, layout, metadata
+- Key files: `page.tsx` (entry point), `layout.tsx` (root HTML), `api/*` (endpoints)
 
 **app/api/:**
-- Purpose: API endpoints (REST routes)
-- Contains: Two route handlers
-- Key files: `chat/route.ts` (Claude streaming), `lead/route.ts` (lead capture)
+- Purpose: Serverless API handlers
+- Contains: POST endpoints for chat and lead capture
+- Key files: `chat/route.ts` (Claude streaming), `lead/route.ts` (validation + services)
 
 **components/:**
 - Purpose: Reusable React UI components
-- Contains: All client components marked with `"use client"`; stateful (Chatbot, Nav) and stateless (Hero, Gallery)
-- Key files: `Chatbot.tsx` (primary interaction), `Hero.tsx` (main visual), `Nav.tsx` (navigation)
+- Contains: Page sections, chat interface, form elements
+- Key files: Section components (Hero, Stats, Amenities, etc.), Chatbot, ContactLink
 
 **lib/:**
-- Purpose: Shared utilities, hooks, data, and integrations
-- Contains: Custom React hooks, Anthropic/Resend/FUB client initialization, content data
-- Key files: `parker-data.ts` (master content), `hooks.ts` (animation logic), `resend.ts` & `fub.ts` (external APIs)
+- Purpose: Shared utilities, data exports, service clients
+- Contains: Content constants, email/CRM integrations, API clients
+- Key files: `parker-data.ts` (single source of truth), `resend.ts`, `fub.ts`
+
+**public/:**
+- Purpose: Static assets served by Next.js
+- Contains: Favicon, robots.txt (may also be generated), any local images
+- Key files: Generated by Next.js at build time
+
+**node_modules/:**
+- Purpose: Package dependencies
+- Contains: Next.js, React, Tailwind, Anthropic SDK, Resend, etc.
+- Key files: None — auto-generated by npm
 
 ## Key File Locations
 
 **Entry Points:**
-- `app/page.tsx`: Homepage; client component root; owns global `chatOpen` state
-- `app/layout.tsx`: Root layout; metadata, OG tags, JSON-LD, analytics scripts
-- `components/Chatbot.tsx`: Chat modal; controlled by page state; handles message flow
-- `components/Nav.tsx`: Fixed navbar; detects scroll position; renders links and CTAs
+- `app/page.tsx`: Home page component, chatbot state management, component composition
+- `app/layout.tsx`: Root HTML wrapper, metadata generation, analytics script injection
+- `app/api/chat/route.ts`: Claude streaming endpoint (POST /api/chat)
+- `app/api/lead/route.ts`: Lead capture endpoint (POST /api/lead)
 
 **Configuration:**
-- `next.config.ts`: Remote image patterns (fitzrovia.ca CDN)
-- `tsconfig.json`: TypeScript strict mode, path aliases (`@/` → `./`)
-- `package.json`: Dependencies (Next.js, React, Tailwind, @anthropic-ai/sdk, resend), scripts
-- `.env.local.example`: Template for required env vars (ANTHROPIC_API_KEY, RESEND_API_KEY, FUB_API_KEY, analytics IDs)
+- `tsconfig.json`: TypeScript path aliases (`@/*` → `./`), strictness
+- `next.config.ts`: Image remote patterns (fitzrovia.ca)
+- `package.json`: Scripts (dev, build, start, lint), dependencies, versions
+- `globals.css`: Tailwind v4 syntax, custom utilities, explicit @source directives
 
 **Core Logic:**
-- `lib/parker-data.ts`: All static content (building info, pricing, amenities, images, system prompt)
-- `app/api/chat/route.ts`: Claude API integration; rate limiting; lead detection
-- `app/api/lead/route.ts`: Resend email + FUB CRM + transcript note
-- `components/Chatbot.tsx`: Message UI, streaming reader, analytics event firing
-
-**Styling:**
-- `app/globals.css`: Tailwind v4 imports, custom CSS variables, utility definitions, scroll animation keyframes
-- Component inline styles: Brand colors via CSS variables (`--dark`, `--orange`, `--cream`, etc.)
-- Font setup: `app/layout.tsx` imports Google Fonts (Cormorant Garamond, Plus Jakarta Sans) as variables
+- `lib/parker-data.ts`: All static content (pricing, amenities, images, system prompt)
+- `lib/resend.ts`: Resend email client initialization and send function
+- `lib/fub.ts`: Follow Up Boss API wrappers (createFUBLead, createFUBNote)
 
 **Testing:**
-- No test files present (not applicable to marketing landing page)
+- No test files present in codebase (no `.test.ts`, `.spec.ts`)
+- Manual testing via `npm run dev` on port 3000
 
 ## Naming Conventions
 
 **Files:**
-- Components: PascalCase `.tsx` (e.g., `Chatbot.tsx`, `Hero.tsx`)
-- API routes: `route.ts` inside directory matching path (e.g., `app/api/chat/route.ts`)
-- Utilities/hooks: camelCase `.ts` (e.g., `parker-data.ts`, `hooks.ts`)
-- Styles: `globals.css` (single stylesheet per layout)
+- React components: PascalCase (`Hero.tsx`, `Chatbot.tsx`)
+- API routes: `route.ts` (Next.js convention)
+- Utilities/data: camelCase (`parker-data.ts`, `contact-link.tsx`)
+- Configuration: lowercase with hyphens (`next.config.ts`, `.eslintrc.cjs`)
 
 **Directories:**
-- `app/` — Next.js reserved directory
-- `app/api/` — API routes (each route in subdirectory with `route.ts`)
-- `components/` — React components
-- `lib/` — Shared utilities and data
-- `public/` — Static files (unused in this project; images from CDN)
+- Feature directories: lowercase, plural when containing multiple files (`components/`, `app/api/`)
+- Nested routes: `api/[feature]/route.ts` pattern
 
-**Functions:**
-- React components: PascalCase (e.g., `function Hero()`, `export default function Chatbot()`)
-- Hooks: prefix `use` + camelCase (e.g., `useScrollReveal()`, `useCountUp()`)
-- Utilities: camelCase (e.g., `checkRateLimit()`, `cleanContent()`, `createFUBLead()`)
-
-**Variables:**
-- Constants: UPPER_CASE (e.g., `PARKER_INFO`, `PARKER_PRICING`, `MAX_MESSAGES`, `BOT_UA`)
-- State: camelCase (e.g., `messages`, `chatOpen`, `scrolled`, `leadCaptured`)
-- Exported: PascalCase for types/interfaces (e.g., `LeadData`), UPPER_CASE for data (e.g., `PARKER_IMAGES`)
+**Variables & Functions:**
+- Functions: camelCase (`checkRateLimit()`, `isBogusEmail()`)
+- Constants: UPPER_SNAKE_CASE (`PARKER_PRICING`, `MAX_REQUESTS`, `WINDOW_MS`)
+- React hooks: camelCase with `use` prefix (`useState`, `useEffect`)
+- Component props: camelCase (`onOpenChat`, `chatOpen`, `setOpen`)
 
 **Types:**
-- Component props interfaces: Inline or minimal exports (e.g., `interface ContactLinkProps`)
-- Data types: In `lib/resend.ts` (e.g., `export interface LeadData`)
-- API responses: Inferred (no formal response types)
+- Interfaces: PascalCase with leading `I` or no prefix (`LeadData`, `NextConfig`)
+- Union types: PascalCase (`ReadableStreamType`)
 
 ## Where to Add New Code
 
-**New Feature (e.g., new landing section):**
-- Create component: `components/NewSection.tsx`
-- Add to `app/page.tsx` render order
-- If content needed: add to `lib/parker-data.ts`
-- If animations: use `lib/hooks.ts` (useScrollReveal or useCountUp)
+**New Feature (e.g., contact form):**
+- Primary code: `components/ContactForm.tsx` (new component)
+- Data: Add fields to `PARKER_INFO` in `lib/parker-data.ts` if needed
+- API: New route `app/api/contact/route.ts` if backend required
+- Tests: None currently — manual testing recommended
 
-**New Component/Module:**
-- Implementation: `components/{ComponentName}.tsx` (if UI) or `lib/{module}.ts` (if logic/utilities)
-- Imports: Use path alias `@/` for imports from project root (e.g., `@/lib/parker-data`)
-- Client vs Server: Mark with `"use client"` if using hooks, state, event listeners; otherwise server-renderable
+**New Page Section:**
+- Implementation: Create component in `components/[SectionName].tsx`
+- Import: Add to `app/page.tsx` imports and JSX composition
+- Data: Source from `lib/parker-data.ts` constants
+- Styling: Use Tailwind utilities from `globals.css` or add custom `@layer utilities`
 
-**Utilities & Helpers:**
-- Shared hooks: `lib/hooks.ts` (must be client components due to `useEffect`, `useRef`)
-- Data constants: `lib/parker-data.ts` (sourced by components and layout)
-- API integrations: `lib/{service}.ts` (e.g., `lib/resend.ts`, `lib/fub.ts`)
+**New API Endpoint:**
+- Create: `app/api/[feature]/route.ts` with `export async function POST/GET(req)`
+- Validation: Add input checks before external service calls
+- Error handling: Try/catch with `NextResponse.json()` or `Response()`
+- Rate limiting: Reuse pattern from `app/api/chat/route.ts` if needed
 
-**API Endpoints:**
-- New route: Create `app/api/{resource}/route.ts` file
-- All routes are POST-only by convention (no GET handlers defined)
-- Validation happens in route handler (no middleware)
+**Shared Utilities:**
+- Helper functions: `lib/[utility-name].ts`
+- Data constants: Add to `lib/parker-data.ts` (single source of truth pattern)
+- Service clients: Lazy-initialize in `lib/[service].ts` to avoid build-time errors
+
+**Styling:**
+- Global CSS: `app/globals.css` (Tailwind directives + custom utilities)
+- Component styles: Inline Tailwind classes in JSX (no CSS modules)
+- Custom utilities: Define in `@layer utilities` in globals.css (e.g., `.display`, `.display-italic`)
 
 ## Special Directories
 
-**app/api/:**
-- Purpose: API route handlers
-- Generated: No (manually created)
-- Committed: Yes
-
-**.next/:**
-- Purpose: Build output from `npm run build`
-- Generated: Yes (Turbopack output)
-- Committed: No (in .gitignore)
+**app/.next/:**
+- Purpose: Build output from Next.js Turbopack
+- Generated: Yes (during `npm run build`)
+- Committed: No (.gitignore)
+- Content: Compiled pages, server functions, static assets
 
 **node_modules/:**
-- Purpose: Installed dependencies
-- Generated: Yes (from package.json + lock file)
-- Committed: No (in .gitignore)
+- Purpose: Installed npm dependencies
+- Generated: Yes (by npm)
+- Committed: No (.gitignore)
+- Content: Next.js 16, React 19, Tailwind 4, Anthropic SDK, Resend, etc.
 
-**public/:**
-- Purpose: Static assets served at root
-- Generated: No (images served from fitzrovia.ca CDN, not from public/)
-- Committed: No (empty/unused in this project)
+**.next/:**
+- Purpose: Next.js build cache and output
+- Generated: Yes (during dev and build)
+- Committed: No
+- Content: Compiled pages, server chunks, cache data
 
 **.env.local:**
-- Purpose: Local environment variables (secrets)
-- Generated: No (created manually from .env.local.example)
-- Committed: No (in .gitignore)
+- Purpose: Local environment variables (development)
+- Generated: No (manually created from `.env.local.example`)
+- Committed: No (.gitignore)
+- Content: API keys, URLs (NEVER commit secrets)
 
-## Image & Asset Strategy
+**public/:**
+- Purpose: Static files served at root level (e.g., /favicon.ico)
+- Generated: No (manually added)
+- Committed: Yes
+- Content: Favicon, robots.txt (if static), static images
 
-**Images:**
-- All hosted on `https://fitzrovia.ca/app/uploads/2021/05/` (external CDN)
-- Paths centralized in `lib/parker-data.ts` (PARKER_IMAGES object)
-- Allowed via `next.config.ts` remotePatterns
-- Served via Next.js `<Image>` component (optimized, responsive)
+## Import Path Aliases
 
-**Fonts:**
-- Imported via Next.js `next/font/google` (self-hosted, zero-latency)
-- Setup in `app/layout.tsx`; CSS variables in layout body
+**`@/*`** → `./` (root)
 
-**CSS:**
-- Single `app/globals.css` file
-- Tailwind v4 with `@import "tailwindcss"` syntax
-- No separate `tailwind.config.ts` (v4 uses CSS variables)
-- Custom utilities in `@layer utilities`
+Used throughout codebase:
+- `import Nav from "@/components/Nav"` (not `../components/Nav`)
+- `import { PARKER_INFO } from "@/lib/parker-data"` (not `../../lib/parker-data`)
+- `import { sendLeadEmail } from "@/lib/resend"` (not `../../../lib/resend`)
 
-## File Change Impact Map
+Benefits: Cleaner imports, easier refactoring when moving files.
 
-**If content changes (building info, pricing, images, system prompt):**
-- Edit: `lib/parker-data.ts`
-- Affects: All components importing from it + `app/layout.tsx` (JSON-LD) + `/api/chat` (system prompt)
+## Image Sourcing
 
-**If styling changes (brand colors, spacing, fonts):**
-- Edit: `app/globals.css` (CSS variables) or component inline styles
-- Affects: All components using those variables
+**Remote CDN (fitzrovia.ca):**
+- All images served from `https://fitzrovia.ca/app/uploads/2021/05/`
+- Configured in `next.config.ts` under `images.remotePatterns`
+- URLs stored in `lib/parker-data.ts` (`PARKER_IMAGES` export)
+- Used in components via `<Image src={PARKER_IMAGES.hero} />`
 
-**If chat flow changes (questions asked, lead fields):**
-- Edit: `lib/parker-data.ts` (PARKER_SYSTEM_PROMPT)
-- Affects: `/api/chat/route.ts` (lead detection regex), `components/Chatbot.tsx` (UI/state), `lib/resend.ts` (email template)
+**Local public/ directory:**
+- Not currently used for product images
+- Reserved for favicon, robots.txt, other static assets
 
-**If page layout changes (section order, new sections):**
-- Edit: `app/page.tsx` (render order)
-- Affects: CSS scroll anchors, section IDs for Nav links
+## Dependency Tree
 
-**If analytics changes (new GA4 events, new conversions):**
-- Edit: `components/Chatbot.tsx` (event firing), `app/layout.tsx` (script setup)
-- Affects: Customer journey tracking, retargeting audiences
+**Top-level dependencies (package.json):**
+- `next` 16.1.6 — Framework
+- `react` 19.2.3, `react-dom` 19.2.3 — UI library
+- `@anthropic-ai/sdk` 0.78.0 — Claude API client
+- `ai` 6.0.116 — Vercel AI SDK (streaming utilities)
+- `resend` 6.9.3 — Transactional email
+- `tailwindcss` 4 — CSS framework (dev dependency)
+
+**Dev dependencies:**
+- TypeScript 5 — Type checking
+- ESLint 9 — Linting
+- `@tailwindcss/postcss` 4 — Tailwind PostCSS plugin
 
 ---
 
-*Structure analysis: 2026-03-11*
+*Structure analysis: 2026-03-13*

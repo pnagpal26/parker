@@ -1,182 +1,161 @@
 # Coding Conventions
 
-**Analysis Date:** 2025-03-11
+**Analysis Date:** 2025-03-13
 
 ## Naming Patterns
 
 **Files:**
-- React components: PascalCase (e.g., `components/Chatbot.tsx`, `components/Nav.tsx`)
-- TypeScript utilities: camelCase (e.g., `lib/hooks.ts`, `lib/fub.ts`)
-- API routes: lowercase with hyphens in path structure (e.g., `app/api/chat/route.ts`, `app/api/lead/route.ts`)
+- PascalCase for React components: `Chatbot.tsx`, `Hero.tsx`, `Gallery.tsx`
+- camelCase for utility/service files: `parker-data.ts`, `resend.ts`, `fub.ts`
+- Route files follow Next.js convention: `route.ts` in `app/api/` directories
 
 **Functions:**
-- Component functions: PascalCase (exported as default, no `function` keyword prefix)
-- Utility functions: camelCase (e.g., `cleanContent()`, `checkRateLimit()`, `pruneIfNeeded()`)
-- Event handlers: `onX` pattern (e.g., `onOpenChat()`, `onScroll`, `onSubmit`, `onClick`)
-- Hook names: `useX` pattern (e.g., `useScrollReveal()`, `useCountUp()`)
+- camelCase for all function names: `sendMessage()`, `cleanContent()`, `checkRateLimit()`, `isBogusEmail()`
+- Helper functions use verb prefixes: `check*`, `get*`, `is*`, `send*`, `create*`
 
 **Variables:**
-- State variables: camelCase (e.g., `chatOpen`, `messages`, `loading`, `leadCaptured`)
-- Constants (module-level): UPPER_SNAKE_CASE (e.g., `WINDOW_MS`, `MAX_REQUESTS`, `BOT_UA`, `DOTS`)
-- Type/interface variables: camelCase (e.g., `newMessages`, `assistantPlaceholder`, `ipWindows`)
-- CSS classes: kebab-case (e.g., `chat-glass`, `orange-rule`, `section-num`)
+- camelCase for all variables: `messages`, `userText`, `leadCaptured`, `inputRef`
+- SCREAMING_SNAKE_CASE for constants: `WINDOW_MS`, `MAX_REQUESTS`, `MAX_MESSAGES`, `BOT_UA`, `BOGUS_EMAIL_DOMAINS`
+- SCREAMING_SNAKE_CASE also used for exported configuration: `PARKER_PRICING`, `PARKER_INFO`, `PARKER_IMAGES`, `PARKER_SYSTEM_PROMPT`
+- Prefix private/internal state with underscore if needed, but generally use direct names
 
 **Types:**
-- Interfaces: PascalCase (e.g., `ContactLinkProps`, `Message`, `LeadData`)
-- Type aliases: PascalCase (e.g., `Metadata`)
-- Generic types: preserved as-is (e.g., `React.ReactNode`, `React.CSSProperties`)
+- PascalCase for interfaces and types: `Message`, `LeadData` (from context)
+- Use concise names reflecting the concept: `Message` not `MessageObject`
 
 ## Code Style
 
 **Formatting:**
-- No Prettier config — relies on ESLint auto-formatting
-- 2-space indentation (inferred from codebase)
-- Semicolons required (enforced by ESLint)
-- Single quotes for strings in JSX attributes and object keys
+- No explicit formatter configured (no `.prettierrc` file found)
+- Manual formatting observed: 2-space indentation, semicolons present
+- Line length appears flexible—system prompt reaches 200+ characters on single lines
 
 **Linting:**
-- Framework: ESLint 9+ with `eslint-config-next` (core-web-vitals + TypeScript)
-- Config file: `eslint.config.mjs` (flat config format)
-- Key rules: Next.js core web vitals + TypeScript strict checks
-- No custom eslint rule overrides beyond Next.js defaults
-- Command: `npm run lint` runs ESLint
-
-**TypeScript:**
-- `tsconfig.json`: Strict mode enabled (`strict: true`)
-- Target: ES2017
-- Module resolution: bundler
-- Path aliases: `@/*` maps to project root (e.g., `@/components`, `@/lib`)
-- JSX factory: `react-jsx` (automatic JSX transform)
+- ESLint v9 with Next.js config (`eslint-config-next/core-web-vitals`, `eslint-config-next/typescript`)
+- Config file: `eslint.config.mjs` (flat config format, ESLint v9+)
+- Run with: `npm run lint`
+- Notable: React hooks exhaustive deps warning disabled explicitly in code: `// eslint-disable-next-line react-hooks/exhaustive-deps`
 
 ## Import Organization
 
 **Order:**
-1. React/hooks imports (`import { useState, useEffect, ... } from "react"`)
-2. Next.js imports (`import Image from "next/image"`, `import Script from "next/script"`)
-3. Type imports (`import type { ... } from "..."`)
-4. Library imports (`import { ... } from "@anthropic-ai/sdk"`)
-5. Local lib imports (`import { ... } from "@/lib/..."`)
-6. Component imports (`import { ... } from "@/components/..."`)
-7. Global declarations (if needed)
+1. React imports: `import { useEffect, useRef, useState } from "react";`
+2. Next.js imports: `import { NextRequest } from "next/server";`
+3. Third-party packages: `import Anthropic from "@anthropic-ai/sdk";`
+4. Internal imports: `import { PARKER_SYSTEM_PROMPT } from "@/lib/parker-data";`
 
 **Path Aliases:**
-- Use `@/` prefix for all imports (configured in `tsconfig.json`)
-- Example: `import Nav from "@/components/Nav"` (not `import Nav from "../components/Nav"`)
-
-**Directive placement:**
-- Client components: `"use client"` at top of file (required for React hooks, event handlers)
-- Server components: No directive (default in Next.js App Router)
+- `@/*` resolves to project root (defined in `tsconfig.json`)
+- Used for all internal imports: `@/lib/parker-data`, `@/lib/resend`, `@/lib/fub`, `@/components/...`
 
 ## Error Handling
 
-**Strategy:** Try-catch with console logging; graceful degradation where possible.
-
 **Patterns:**
-- Async functions wrap fetch/API calls in try-catch (see `app/api/chat/route.ts`, `app/api/lead/route.ts`)
-- Catch blocks: `console.error(message, error)` with context
-- User-facing: Return structured error responses (e.g., `NextResponse.json({ error: "..." }, { status: 400 })`)
-- Silent failures: Use optional chaining (`?.`) and nullish coalescing (`??`) to avoid errors
-- Example from `lib/fub.ts`:
-  ```typescript
-  if (!res.ok) {
-    const text = await res.text();
-    console.error(`FUB API error ${res.status}:`, text);
-    return null;
-  }
-  ```
+- Explicit validation before processing: check input shape, length, type before operations
+  - Example in `app/api/chat/route.ts`: validate `messages` is array, non-empty, length <= 30, each message has valid `role` and `content`
+  - Example in `app/api/lead/route.ts`: validate email required, then check bogus patterns
+- Return HTTP status codes for validation failures:
+  - `400` for malformed requests (missing required fields, invalid structure)
+  - `429` for rate limit exceeded
+  - `422` for rejected valid-format data (bogus email/phone)
+  - `500` for unexpected server errors
+- Use try-catch at API route level, log errors to console, return error responses
+- Fire-and-forget fetch calls wrapped in `.catch(console.error)` to avoid silent failures
 
-**Validation:**
-- Input validation before processing (check message array, length, content type)
-- Guard clauses for missing required values (e.g., `if (!lead.email) return ...`)
-- Type guards with `typeof` checks before operations
+**Example pattern from `app/api/chat/route.ts`:**
+```typescript
+try {
+  // ... validation logic ...
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return new Response("Bad request", { status: 400 });
+  }
+  // ... main logic ...
+} catch (error) {
+  console.error("Chat API error:", error);
+  return new Response("Internal server error", { status: 500 });
+}
+```
 
 ## Logging
 
-**Framework:** Console only (no external logging library).
+**Framework:** `console` (no dedicated logging library)
 
 **Patterns:**
-- `console.error()`: API errors, validation failures, edge cases
-- `console.warn()`: Degraded states (e.g., missing optional env vars)
-- No `console.log()` in production code (only debugging)
-- Context: Always include the operation name in the error message
-- Example: `console.error("Lead API error:", error)` (not just `console.error(error)`)
-
-**No structured logging or log levels** beyond console.error/warn.
+- `console.error()` for API errors and failed integrations
+  - Example: `console.error("Chat API error:", error);`
+  - Example: `console.error("Failed to parse lead data from chatbot:", e);`
+- `console.warn()` for rejected data validation (e.g., bogus email detection)
+  - Example: `console.warn("Bogus email rejected:", lead.email);`
+- Minimal logging in components—focus on critical path events (lead capture)
+- Console calls remain in production code; no environment-based log suppression observed
 
 ## Comments
 
 **When to Comment:**
-- Complex logic (e.g., rate limiting algorithm in `app/api/chat/route.ts`)
-- Non-obvious regex or string transformations (e.g., `BOT_UA` regex)
-- Section dividers for logical groups (e.g., `// ── Request validation ────────`)
-- Security/privacy implications (e.g., `// base64-encoded — keeps contact info out of server-rendered HTML`)
+- Block comments used for section headers: `// ── Simple in-memory rate limiter ─────...`
+- Inline comments explain non-obvious logic: `// all same digit: 1111111111` explaining regex
+- Comments placed above the code they describe, not at end of line
+- Used sparingly—self-documenting code preferred
 
 **JSDoc/TSDoc:**
-- Used for custom hooks (e.g., `useScrollReveal()`, `useCountUp()`)
-- Single-line format: `/** Brief description */` above function
-- Example from `lib/hooks.ts`:
-  ```typescript
-  /** Adds .in class to all .reveal children when section enters viewport */
-  export function useScrollReveal() { ... }
-  ```
-
-**No @param/@returns:** Most functions are self-documenting via TypeScript types.
+- Not observed in codebase
+- TypeScript strict mode enabled, relying on types for documentation
+- Function signatures use type annotations instead of JSDoc blocks
 
 ## Function Design
 
-**Size:** Functions kept concise — most components are 80–150 lines.
+**Size:**
+- Small, focused functions preferred
+- Most utility functions < 15 lines
+- Example: `isBogusPhone()` = 6 lines, `isBogusEmail()` = 7 lines, `checkRateLimit()` = 11 lines
 
 **Parameters:**
-- Use destructuring for objects (e.g., `{ onOpenChat }` instead of `props`)
-- Single-use component props: destructured inline
-- API route params: Destructure from `req.json()`, `req.headers`
+- Destructured object parameters for React components: `{ open, setOpen }` in `Chatbot`
+- Simple types for API routes (extracted from `req.json()`)
+- No more than 1-2 parameters per function; use objects for multiple related values
 
 **Return Values:**
-- Components: JSX.Element (implicit)
-- Hooks: Ref object or void (side-effect only)
-- Utilities: Explicit types (e.g., `Promise<LeadData>`, `boolean`, `string | null`)
-- Early returns: Used for guard clauses (check error conditions first, then process)
-
-**Async Functions:**
-- Used for API routes, event handlers that fetch data
-- Error handling wrapped in try-catch
-- Promise.all() or Promise.allSettled() for parallel ops (see `app/api/lead/route.ts`)
+- HTTP responses use `NextResponse.json()` or `new Response()` with status codes
+- Helper functions return early on validation failure (guard clauses)
+- Example guard pattern from `isBogusPhone()`:
+  ```typescript
+  if (digits.length < 7) return true;
+  if (/^(\d)\1+$/.test(digits)) return true;
+  if (digits === "1234567890" || digits === "0987654321") return true;
+  return false;
+  ```
 
 ## Module Design
 
 **Exports:**
-- Default export: Component files (e.g., `export default function Nav()`)
-- Named exports: Utilities and hooks (e.g., `export function useScrollReveal()`, `export async function createFUBLead()`)
-- Type exports: `export type` or `export interface`
+- Single default export for page components and route handlers: `export default function Chatbot() { ... }`
+- Named exports for utilities and data: `export const PARKER_INFO = { ... }`
+- Type exports for shared types: `export type LeadData = { ... }` (inferred from usage)
 
 **Barrel Files:**
-- Used sparingly — `lib/parker-data.ts` is a single source of truth for content
-- No component barrel files (direct imports preferred)
+- No barrel files (index.ts) observed
+- Imports reference specific modules directly: `from "@/lib/resend"` not `from "@/lib"`
 
-**File Structure Pattern:**
-- `lib/` contains reusable utilities and data (`hooks.ts`, `parker-data.ts`, `resend.ts`, `fub.ts`)
-- `components/` contains page sections (no sub-directories)
-- `app/` contains routes and layout
-- `app/api/` contains API handlers with inline middleware (rate limiting, validation)
+## Client vs Server Components
 
-## CSS & Styling
+**Patterns:**
+- Components default to Server Components in Next.js 13+ App Router
+- Use `"use client"` directive at top of file for interactive components
+  - Example: `Chatbot.tsx` (handles state, events, focus)
+  - Example: `ContactLink.tsx` (client-side base64 decoding to prevent scraping)
+- Route handlers are server-only (`app/api/chat/route.ts`, `app/api/lead/route.ts`)
 
-**Approach:** Inline styles with CSS variables + Tailwind utility classes.
+## TypeScript Configuration
 
-**CSS Variables:**
-- Defined in `:root` in `app/globals.css` (brand palette, fonts)
-- Accessed via `style={{ color: "var(--ink)", fontFamily: "var(--font-body)" }}`
-- Custom utilities in `@layer utilities` for Tailwind-incompatible properties (padding, margin, width/height variants)
+**Strict Mode:** Enabled
+- `"strict": true` in `tsconfig.json`
+- All types explicitly declared, no implicit `any`
+- Null/undefined checks enforced
 
-**Tailwind Usage:**
-- Imported via `@import "tailwindcss"` (v4 syntax, not `@tailwind` directives)
-- Responsive classes: `hidden lg:block`, `sm:py-14`, `md:grid-cols-4`
-- No custom config file needed (v4 uses CSS variables)
-
-**Animations:**
-- Defined inline in `<style>` tags (e.g., `@keyframes dotBounce` in `Chatbot.tsx`)
-- Cubic-bezier easing for smooth motion: `cubic-bezier(0.16, 1, 0.3, 1)`
+**Target:** ES2017
+- Uses modern JavaScript features (async/await, destructuring, arrow functions)
+- Module system: ESNext with bundler resolution
 
 ---
 
-*Convention analysis: 2025-03-11*
+*Convention analysis: 2025-03-13*

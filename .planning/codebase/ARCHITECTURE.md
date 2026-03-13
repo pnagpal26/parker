@@ -1,161 +1,181 @@
 # Architecture
 
-**Analysis Date:** 2026-03-11
+**Analysis Date:** 2026-03-13
 
 ## Pattern Overview
 
-**Overall:** Single-Page Application (Next.js App Router) with server-side lead capture and external CRM/email integration.
+**Overall:** Server-side streaming chatbot with client-driven page composition and lead capture pipeline.
 
 **Key Characteristics:**
-- Client-rendered landing page (client component root in `app/page.tsx`)
-- Stateless API routes for streaming chat and lead capture
-- Content-driven data model (single source of truth in `lib/parker-data.ts`)
-- Parallel processing of lead data to Resend (email) and Follow Up Boss (CRM)
+- Next.js 16 App Router with TypeScript for type safety
+- Claude AI streaming via `/api/chat` with automatic lead detection
+- Client-side state management for chatbot visibility (`page.tsx`)
+- Content stored in centralized data layer (`lib/parker-data.ts`)
+- Three-way lead validation before external service calls (email, CRM)
 
 ## Layers
 
-**Presentation:**
-- Purpose: Render interactive landing page sections (Hero, Stats, Gallery, Chatbot)
+**Presentation Layer:**
+- Purpose: Render responsive UI components and handle user interactions
 - Location: `components/`
-- Contains: React client components with inline styles and Tailwind utilities
-- Depends on: `lib/parker-data.ts` for content; `lib/hooks.ts` for scroll/animation logic
-- Used by: `app/page.tsx` (root layout orchestrator)
+- Contains: Page sections (Hero, Nav, Stats, Amenities, Gallery, Footer), Chatbot interface, form inputs
+- Depends on: Data from `lib/parker-data.ts`, client-side state
+- Used by: `app/page.tsx` (main layout orchestration)
 
-**State Management & Interaction:**
-- Purpose: Manage chat UI state, lead capture state, analytics event firing
-- Location: `components/Chatbot.tsx`, `components/Nav.tsx`, `app/page.tsx`
-- Contains: `useState`, `useEffect` hooks; event listeners (GA4, Meta Pixel tracking)
-- Depends on: Analytics window APIs; `/api/chat` for streaming messages
-- Used by: Chat FAB and page-level chat state coordination
-
-**Data Layer (Content):**
-- Purpose: Single source of truth for all building info, pricing, images, system prompt
+**Data Layer:**
+- Purpose: Single source of truth for all static content, pricing, images, and AI system prompt
 - Location: `lib/parker-data.ts`
-- Contains: Exported constants (`PARKER_INFO`, `PARKER_PRICING`, `PARKER_IMAGES`, `PARKER_SYSTEM_PROMPT`)
-- Depends on: None (pure data)
+- Contains: `PARKER_INFO`, `PARKER_PRICING`, `PARKER_INCENTIVES`, `PARKER_IMAGES`, `PARKER_SYSTEM_PROMPT`
+- Depends on: None
 - Used by: Components, API routes, metadata generation
 
-**API Routes (Backend):**
-- Purpose: Handle chat streaming and lead capture workflows
-- Location: `app/api/chat/route.ts`, `app/api/lead/route.ts`
-- Contains: Request validation, rate limiting, external API calls
-- Depends on: Anthropic SDK, Resend SDK, Follow Up Boss REST API
-- Used by: Client-side fetch calls from Chatbot component
+**API Layer:**
+- Purpose: External request handling, streaming, validation, and service orchestration
+- Location: `app/api/`
+- Routes:
+  - `/api/chat` - POST: Claude streaming with lead detection
+  - `/api/lead` - POST: Lead validation and capture (Resend + FUB)
+- Depends on: Anthropic SDK, Resend client, FUB API, rate limiting
+- Used by: Client-side Chatbot via fetch
 
-**External Integrations:**
-- Purpose: Connect to third-party services for email, CRM, analytics
-- Location: `lib/resend.ts`, `lib/fub.ts`; scripts in `app/layout.tsx`
-- Contains: API client initialization, request building, error handling
-- Depends on: Service API keys (environment variables)
+**Service Layer:**
+- Purpose: Encapsulate external integrations (email, CRM)
+- Location: `lib/resend.ts`, `lib/fub.ts`
+- Contains: `sendLeadEmail()`, `createFUBLead()`, `createFUBNote()`
+- Depends on: API credentials from environment
 - Used by: `/api/lead` route
+
+**Metadata & SEO:**
+- Purpose: OG tags, JSON-LD structured data, analytics script injection
+- Location: `app/layout.tsx`
+- Depends on: `PARKER_IMAGES`, `PARKER_INFO`, `PARKER_PRICING`
+- Used by: Search engines, social platforms, analytics services
 
 ## Data Flow
 
-**Chat & Lead Capture Flow:**
+**Chatbot Conversation Flow:**
 
-1. User clicks "Book a Tour" / "Chat with Emma" CTA
-2. `app/page.tsx` state: `chatOpen = true`
-3. `components/Chatbot.tsx` initializes: sends welcome message to `/api/chat`
-4. `/api/chat/route.ts` receives `{ messages: [...] }`, validates, streams response from Claude
-5. Claude response is streamed back as `text/plain` chunk by chunk
-6. Chatbot UI updates progressively; detects `<lead_data>` XML tag in response
-7. On `<lead_data>` detection:
-   - `Chatbot.tsx` fires GA4 `lead_captured` event + Google Ads conversion
-   - `Chatbot.tsx` fires Resend `Lead` event
-   - Response stream completes
-8. `/api/chat/route.ts` detects `<lead_data>` in fullText, auto-fires POST to `/api/lead`
-9. `/api/lead/route.ts` receives lead object + transcript:
-   - Sends email via Resend (parallel)
-   - Creates person in FUB (parallel)
-   - On FUB success, creates transcript note on person (sequential)
-10. Success response returned to client
-11. Chatbot shows "Your info has been sent to our team" confirmation badge
+1. User clicks "Chat with Emma" / "Book a Tour" CTA
+2. `app/page.tsx` sets `chatOpen: true` → `<Chatbot open={true} setOpen={setChatOpen} />`
+3. User types message → `Chatbot` component sends POST to `/api/chat` with `{ messages }`
+4. `/api/chat` validates message (array, length, content) and IP rate limit
+5. `/api/chat` calls Anthropic `messages.create()` with `PARKER_SYSTEM_PROMPT`
+6. Claude response streams back as `text/plain` chunked response
+7. `Chatbot` component renders streaming text in real-time
+8. `/api/chat` detects `<lead_data>` block in full stream response
+9. If detected, `/api/chat` extracts JSON + builds transcript, fires async POST to `/api/lead` (fire-and-forget)
+10. User sees Emma's sign-off: *"I'll pass your details along..."*
+
+**Lead Capture Pipeline:**
+
+1. `/api/chat` detects `<lead_data>{...}</lead_data>` block → async fetch to `/api/lead`
+2. `/api/lead` receives: `{ name, email, phone, moveIn, suiteType, budget, source, transcript }`
+3. **Validation before external calls:**
+   - Check email: not empty → not in bogus domain list → not all-same-char local part
+   - Check phone: if provided → min 7 digits → not all-same digit → not sequential
+4. If validation fails → return 422 with `{ reason: "bogus_email" | "bogus_phone" }`
+5. If valid → parallel execute via `Promise.allSettled()`:
+   - `sendLeadEmail(lead)` → Resend email to garima@teamnagpal.ca
+   - `createFUBLead(lead)` → POST to FUB /v1/events, get `personId` back
+6. If FUB succeeds and transcript exists:
+   - `await createFUBNote(personId, transcript)` → POST to FUB /v1/notes (AWAITED, not fire-and-forget)
+7. Return `{ success: true, email: boolean, fub: boolean }`
+
+**Page Rendering Flow:**
+
+1. `app/layout.tsx` loads metadata, JSON-LD, and analytics scripts (if env vars set)
+2. `app/page.tsx` renders `<main>` with all section components in sequence
+3. Each component reads data from `lib/parker-data.ts` (pricing, images, amenities)
+4. `<Chatbot>` is controlled by `chatOpen` state in `<Page>`, receives callbacks to manage state
 
 **State Management:**
-- Chat state: `chatOpen` (boolean) owned by `app/page.tsx`, passed to `Chatbot.tsx` as controlled component
-- Chatbot internal state: `messages[]`, `input`, `loading`, `leadCaptured`
-- Nav state: `scrolled` (page scroll position), `menuOpen` (mobile menu toggle)
-- Analytics state: Fired on specific user actions, sent to external services (no local state)
+- `chatOpen: boolean` in `app/page.tsx` (root level)
+- Passed as `open={chatOpen} setOpen={setChatOpen}` to `<Chatbot>`
+- All callbacks from Nav, Hero, Incentives propagate `onOpenChat()` → `setChatOpen(true)`
+- No global state provider (React Context or Redux) — single source of truth in page component
 
 ## Key Abstractions
 
-**ContactLink Component (`components/ContactLink.tsx`):**
-- Purpose: Securely display phone/email without exposing to scrapers
-- Implementation: Receives base64-encoded contact string, decodes client-side via `atob()` in `useEffect`
-- Pattern: Server renders placeholder `<span>` with no contact data; client replaces with `<a href="tel:|mailto:">`
-- Used by: `components/Footer.tsx` for Garima's phone/email
+**PARKER_INFO, PARKER_PRICING, PARKER_INCENTIVES, PARKER_IMAGES:**
+- Purpose: Centralized content repository to avoid hardcoding strings in components
+- Examples: `lib/parker-data.ts`
+- Pattern: Exported constants read by components and API routes; JSON-LD schema sources live data from these exports
 
-**useCountUp Hook (`lib/hooks.ts`):**
-- Purpose: Animate numeric counters when section enters viewport
-- Pattern: Observes element with IntersectionObserver, triggers easing animation via `requestAnimationFrame`
-- Used by: `components/Stats.tsx` for stat numbers (Location, Area, Storeys, Suites)
+**PARKER_SYSTEM_PROMPT:**
+- Purpose: Embed Emma chatbot personality, guardrails, and lead-collection logic in one multi-line string
+- Examples: `lib/parker-data.ts` (lines 114–191)
+- Pattern: Passed directly to Anthropic `messages.create()` system parameter; defines conversation rules and lead data XML format
 
-**useScrollReveal Hook (`lib/hooks.ts`):**
-- Purpose: Trigger CSS animations (`.in` class) when elements enter viewport
-- Pattern: IntersectionObserver on all `.reveal`, `.clip-reveal` children; adds `.in` class on intersection
-- Used by: `components/Stats.tsx`, `components/Gallery.tsx`, `components/Incentives.tsx`
+**Rate Limiter (IP-based):**
+- Purpose: Prevent abuse of `/api/chat` endpoint by limiting requests per IP per 10-minute window
+- Examples: `app/api/chat/route.ts` (lines 9–38)
+- Pattern: In-memory `Map<string, { count, resetAt }>`, checked on every request, pruned every 5 minutes
 
-**Leasing Representative Prompt (`PARKER_SYSTEM_PROMPT`):**
-- Purpose: Multi-turn conversational AI instructions for Emma chatbot
-- Contains: Property facts, current pricing/incentives, guardrails, lead collection instructions
-- Pattern: Pre-built system prompt with embedded `<lead_data>` XML template; Claude fills in blanks
-- Updated via: `lib/parker-data.ts` (single edit location)
+**Validation Functions:**
+- Purpose: Reject obviously fake/test data before hitting external services
+- Examples: `isBogusEmail()`, `isBogusPhone()` in `app/api/lead/route.ts`
+- Pattern: Regex + domain blacklist checks; reused by Emma in system prompt for conversational double-check
+
+**ContactLink Component:**
+- Purpose: Prevent email/phone scraping by storing contact info as base64, decoded client-side only
+- Examples: `components/ContactLink.tsx`
+- Pattern: Server renders placeholder `<span>`, `useEffect` calls `atob()` and renders actual `<a href="tel:|mailto:">`, ensuring contact details never in server HTML
 
 ## Entry Points
 
-**Homepage (`app/page.tsx`):**
+**Web Page:**
 - Location: `app/page.tsx`
-- Triggers: Direct navigation to `/` or deployed domain
-- Responsibilities: Render full page layout; own `chatOpen` state; coordinate Chatbot open/close
+- Triggers: User navigates to https://parker.affordablecondos.ca
+- Responsibilities: Render full landing page, manage chatbot visibility state, compose all section components
 
-**Root Layout (`app/layout.tsx`):**
-- Location: `app/layout.tsx`
-- Triggers: Every request (wraps all routes)
-- Responsibilities: Set metadata/OG tags, inject JSON-LD structured data, conditionally load analytics scripts (Meta Pixel, GA4, Google Ads)
-
-**Chat API (`app/api/chat/route.ts`):**
+**Chat API:**
 - Location: `app/api/chat/route.ts`
-- Triggers: POST from Chatbot component (on user message)
-- Responsibilities: Validate request, check rate limit, stream Claude response, detect lead capture trigger
+- Triggers: POST request from `<Chatbot>` component with message array
+- Responsibilities: Rate limit by IP, validate message structure, stream Claude response, detect and trigger lead capture
 
-**Lead Capture API (`app/api/lead/route.ts`):**
+**Lead API:**
 - Location: `app/api/lead/route.ts`
-- Triggers: Auto-fire from `/api/chat` on `<lead_data>` detection; also callable directly
-- Responsibilities: Validate lead fields, send Resend email, create FUB person, append transcript note
+- Triggers: Async POST from `/api/chat` when `<lead_data>` block detected
+- Responsibilities: Validate email/phone, send Resend email, create FUB lead + note, return status
+
+**Sitemap & Robots:**
+- Location: `app/sitemap.ts`, `app/robots.ts`
+- Triggers: GET /sitemap.xml, GET /robots.txt
+- Responsibilities: Serve XML sitemap, disallow /api/, allow root
+
+**Root Layout (Metadata & Analytics):**
+- Location: `app/layout.tsx`
+- Triggers: Every page load
+- Responsibilities: Inject `<head>` metadata, JSON-LD, Meta Pixel script, GA4 + Google Ads scripts (conditional on env vars)
 
 ## Error Handling
 
-**Strategy:** Graceful degradation with fallback contact info (Garima's phone/email).
+**Strategy:** Three-tier validation with progressive fallback; external service errors logged, response still returned.
 
 **Patterns:**
-
-- **Chat API errors:** Returns 403 (bot), 429 (rate limit), 400 (validation), 500 (internal). Client UI shows fallback: "I'm having trouble connecting right now. Please call 416-312-5282 or email Garima@TeamNagpal.ca"
-- **Lead capture errors:** Resend and FUB calls use `Promise.allSettled()` to allow one to fail without blocking the other. Error logged, success status returned to client.
-- **Rate limiting:** In-memory map of IP → request count/window. Stale entries pruned every 5 minutes.
-- **Validation:** All messages validated before Claude call (array, non-empty, max 30 messages, max 1000 chars each).
+- `/api/chat`: Rejects requests at entry (bot UA, rate limit) before processing; returns 403/429; validates message structure before Anthropic call
+- `/api/lead`: Rejects bogus data (422) before hitting Resend/FUB; uses `Promise.allSettled()` so partial failures don't block response
+- Components: No error boundaries; streaming failures logged to console; timeouts handled by Chatbot UI (artificial 2500ms delay)
+- FUB note: `await createFUBNote()` ensures note completes before response sent; fire-and-forget would be killed by Vercel
 
 ## Cross-Cutting Concerns
 
-**Logging:**
-- Server: `console.error()` in API routes for validation, API failures, JSON parse errors
-- Client: Browser console only (no remote logging integrated)
+**Logging:** Console.error/warn in API routes only; no structured logging framework; caught errors in try/catch blocks.
 
 **Validation:**
-- API messages: Checked in `/api/chat/route.ts` (structure, length, content type)
-- Lead data: Email required in `/api/lead/route.ts`; FUB name split into first/last
+- Chat API: Message count, structure, length; bot UA detection
+- Lead API: Email domain blacklist + local part check; phone digit patterns
 
 **Authentication:**
-- Chat API: No user auth; protected via bot UA block + IP rate limit
-- Lead API: No auth required; relies on rate limiting in chat API
-- External services: Anthropic, Resend, FUB all use API keys from environment; Resend lazy-initialized in function scope
+- Chat API: Implicit (bot UA + IP rate limit); no user login required
+- Lead API: No auth; POST accepts any origin (implicit CORS)
+- External services: API keys in environment variables, never exposed client-side
 
-**Security:**
-- Contact info (phone/email) encoded as base64, decoded client-side only
-- Bot user-agent block on `/api/chat` (403 response)
-- Rate limiting: 20 requests per IP per 10 minutes
-- Content Security Policy: Not explicitly set (browser defaults apply)
-- HTTPS: Enforced on Vercel deployment
+**Analytics Integration:**
+- Meta Pixel: `fbq('init')` + `fbq('track', 'PageView')` on load; `ViewContent` on chat opened; `Lead` on lead captured (via Chatbot component)
+- GA4: `gtag('config')` on load; custom events in Chatbot (chat_opened, chat_started, lead_captured) for funnel tracking
+- Google Ads: Conversion pixel fires on `lead_captured` event with conversion label
 
 ---
 
-*Architecture analysis: 2026-03-11*
+*Architecture analysis: 2026-03-13*
