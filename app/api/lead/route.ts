@@ -59,11 +59,11 @@ export async function POST(req: NextRequest) {
       createFUBLead(lead),
     ]);
 
-    const emailOk = emailResult.status === "fulfilled" && emailResult.value !== false;
+    const emailOk = emailResult.status === "fulfilled";
     const fubOk = fubResult.status === "fulfilled" && fubResult.value !== null;
 
-    if (!emailOk) console.error("Resend error:", emailResult.reason);
-    if (!fubOk) console.error("FUB error:", fubResult.reason);
+    if (!emailOk) console.error("Resend error:", emailResult.status === "rejected" ? emailResult.reason : "null result");
+    if (!fubOk) console.error("FUB error:", fubResult.status === "rejected" ? fubResult.reason : "null result");
 
     // Post transcript as a FUB note if we have a personId and transcript
     if (fubOk && lead.transcript) {
