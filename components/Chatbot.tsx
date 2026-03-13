@@ -128,6 +128,28 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
 
       if (fullText.includes("<lead_data>") && !leadCaptured) {
         setLeadCaptured(true);
+
+        // Parse lead data and fire /api/lead
+        const match = fullText.match(/<lead_data>([\s\S]*?)<\/lead_data>/);
+        if (match) {
+          try {
+            const leadData = JSON.parse(match[1]);
+            const allMessages = [...(isWelcome ? [] : newMessages), { role: "assistant", content: cleanContent(fullText) }];
+            const transcript =
+              "=== Parker Chatbot Transcript ===\n\n" +
+              allMessages
+                .map((m) => `${m.role === "user" ? "Prospect" : "Emma"}: ${m.content}`)
+                .join("\n\n");
+            fetch("/api/lead", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ...leadData, source: "Parker Chatbot", transcript }),
+            }).catch(console.error);
+          } catch {
+            console.error("Failed to parse lead_data");
+          }
+        }
+
         // lead_captured events
         window.gtag?.("event", "lead_captured", { event_category: "Parker Chatbot" });
         if (GADS_ID && GADS_CONVERSION_LABEL) {

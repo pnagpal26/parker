@@ -66,6 +66,8 @@ Chatbot      ← controlled: open={chatOpen} setOpen={setChatOpen}
 
 Both `Nav` and `Hero` call `onOpenChat()` from their CTAs.
 
+> **Note:** `components/LeadForm.tsx` exists (static contact form → `/api/lead`) but is not rendered on the page. It posts with `source: "Parker Contact Form"` instead of `"Parker Chatbot"`.
+
 ---
 
 ## Data Layer (`lib/parker-data.ts`)
@@ -298,12 +300,25 @@ Client component. Takes a `base64`-encoded phone/email string, decodes it with `
 | `--dark` | `#131311` |
 | `--ink` | `#0E0E0C` |
 | `--orange` | `#E85B3A` |
+| `--orange-light` | `#F5EAE7` |
 | `--cream` | `#FAF9F7` |
+| `--cream-mid` | `#F2EFE9` |
+| `--warm-white` | `#FFFEFB` |
 | `--ink-muted` | `#6B6560` |
+| `--border` | `#E8E3DC` |
 
 **Fonts:**
-- Display/headings: Cormorant Garamond → `--font-cormorant` → `.display` / `.display-italic`
-- Body: Plus Jakarta Sans → `--font-jakarta`
+- Display/headings: Cormorant Garamond → `--font-cormorant` → CSS var `--font-display` → utility classes `.display` / `.display-italic`
+- Body: Plus Jakarta Sans → `--font-jakarta` → CSS var `--font-body`
+
+## Animation Utilities (`lib/hooks.ts` + `app/globals.css`)
+
+Two scroll-triggered animation hooks used across sections:
+
+- **`useScrollReveal()`** — attach `ref` to a `<section>`. All `.reveal` and `.clip-reveal` children start hidden; `IntersectionObserver` adds `.in` class when 8% visible. Supports `.delay-1` through `.delay-4` for staggered entry.
+- **`useCountUp(target, duration?)`** — attach `ref` to a `<span>`. Animates from 0 to `target` using cubic-ease when scrolled into view (fires once). Used by Stats.
+
+CSS: `.reveal` fades + slides up; `.clip-reveal` uses `clip-path: inset()` for a left-to-right wipe.
 
 ---
 

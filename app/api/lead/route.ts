@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
       createFUBLead(lead),
     ]);
 
-    const emailOk = emailResult.status === "fulfilled";
-    const fubOk = fubResult.status === "fulfilled";
+    const emailOk = emailResult.status === "fulfilled" && emailResult.value !== false;
+    const fubOk = fubResult.status === "fulfilled" && fubResult.value !== null;
 
     if (!emailOk) console.error("Resend error:", emailResult.reason);
     if (!fubOk) console.error("FUB error:", fubResult.reason);
