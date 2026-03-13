@@ -86,6 +86,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   const messagesRef = useRef<Message[]>([]);
   const leadCapturedRef = useRef(false);
   const prevOpenRef = useRef(false);
+  const lastFlushedLengthRef = useRef(0);
 
   useEffect(() => { fubPersonIdRef.current = fubPersonId; }, [fubPersonId]);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
@@ -93,6 +94,9 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
 
   function flushTranscript() {
     if (!fubPersonIdRef.current || !leadCapturedRef.current) return;
+    // Skip if no new messages since last flush (prevents double-fire from panel close + beforeunload)
+    if (messagesRef.current.length <= lastFlushedLengthRef.current) return;
+    lastFlushedLengthRef.current = messagesRef.current.length;
     const transcript =
       "=== Parker Chatbot Transcript ===\n\n" +
       messagesRef.current
