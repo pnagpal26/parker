@@ -85,7 +85,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   const fubPersonIdRef = useRef<number | null>(null);
   const messagesRef = useRef<Message[]>([]);
   const leadCapturedRef = useRef(false);
-  const prevOpenRef = useRef(false);
+
   const lastFlushedLengthRef = useRef(0);
 
   useEffect(() => { fubPersonIdRef.current = fubPersonId; }, [fubPersonId]);
@@ -109,13 +109,6 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
       })
     );
   }
-
-  // Flush when chat panel closes
-  useEffect(() => {
-    if (prevOpenRef.current && !open) flushTranscript();
-    prevOpenRef.current = open;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
 
   // Flush on page unload
   useEffect(() => {
@@ -292,7 +285,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     <>
       {/* FAB */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => { if (open) flushTranscript(); setOpen(!open); }}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition-all duration-300"
         style={{
           background: "var(--orange)",
