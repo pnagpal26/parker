@@ -73,7 +73,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, email: emailOk, fub: fubOk });
+    const fubData = fubOk ? (fubResult.value as { personId?: number } | null) : null;
+    return NextResponse.json({
+      success: true,
+      email: emailOk,
+      fub: fubOk,
+      fubPersonId: fubData?.personId ?? null,
+    });
   } catch (error) {
     console.error("Lead API error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

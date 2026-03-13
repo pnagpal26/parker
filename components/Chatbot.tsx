@@ -14,6 +14,33 @@ interface Message {
   content: string;
 }
 
+interface ParkerChatSession {
+  version: 1;
+  expiresAt: number;
+  name: string;
+  email: string;
+  phone: string;
+  moveIn: string;
+  suiteType: string;
+  budget: string;
+  fubPersonId: number | null;
+}
+
+function loadSession(): ParkerChatSession | null {
+  try {
+    const raw = localStorage.getItem("parker_chat_session");
+    if (!raw) return null;
+    const s = JSON.parse(raw) as ParkerChatSession;
+    if (s.version !== 1 || s.expiresAt < Date.now()) {
+      localStorage.removeItem("parker_chat_session");
+      return null;
+    }
+    return s;
+  } catch {
+    return null;
+  }
+}
+
 function cleanContent(text: string): string {
   return text.replace(/<lead_data>[\s\S]*?<\/lead_data>/g, "").trim();
 }
@@ -48,18 +75,63 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [leadCaptured, setLeadCaptured] = useState(false);
+  const [fubPersonId, setFubPersonId] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initialized = useRef(false);
   const chatStartedFired = useRef(false);
 
+  // Refs for use in event listeners / sendBeacon (always up-to-date)
+  const fubPersonIdRef = useRef<number | null>(null);
+  const messagesRef = useRef<Message[]>([]);
+  const leadCapturedRef = useRef(false);
+  const prevOpenRef = useRef(false);
+
+  useEffect(() => { fubPersonIdRef.current = fubPersonId; }, [fubPersonId]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+  useEffect(() => { leadCapturedRef.current = leadCaptured; }, [leadCaptured]);
+
+  function flushTranscript() {
+    if (!fubPersonIdRef.current || !leadCapturedRef.current) return;
+    const transcript =
+      "=== Parker Chatbot Transcript ===\n\n" +
+      messagesRef.current
+        .map((m) => `${m.role === "user" ? "Prospect" : "Emma"}: ${m.content}`)
+        .join("\n\n");
+    navigator.sendBeacon(
+      "/api/transcript",
+      new Blob([JSON.stringify({ personId: fubPersonIdRef.current, transcript })], {
+        type: "application/json",
+      })
+    );
+  }
+
+  // Flush when chat panel closes
+  useEffect(() => {
+    if (prevOpenRef.current && !open) flushTranscript();
+    prevOpenRef.current = open;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Flush on page unload
+  useEffect(() => {
+    window.addEventListener("beforeunload", flushTranscript);
+    return () => window.removeEventListener("beforeunload", flushTranscript);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (open && !initialized.current) {
       initialized.current = true;
-      // chat_opened event
       window.gtag?.("event", "chat_opened", { event_category: "Parker Chatbot" });
       window.fbq?.("track", "ViewContent", { content_name: "Parker Chat" });
-      sendMessage("", true);
+
+      const session = loadSession();
+      if (session) {
+        setLeadCaptured(true);
+        if (session.fubPersonId) setFubPersonId(session.fubPersonId);
+      }
+      sendMessage("", true, session);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -76,7 +148,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     if (!loading && open) inputRef.current?.focus();
   }, [loading, open]);
 
-  const sendMessage = async (userText: string, isWelcome = false) => {
+  const sendMessage = async (userText: string, isWelcome = false, session: ParkerChatSession | null = null) => {
     const newMessages: Message[] = isWelcome
       ? []
       : [...messages, { role: "user" as const, content: userText }];
@@ -84,7 +156,6 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     if (!isWelcome) {
       setMessages(newMessages);
       setInput("");
-      // chat_started event — fire only on the first real user message
       if (!chatStartedFired.current) {
         chatStartedFired.current = true;
         window.gtag?.("event", "chat_started", { event_category: "Parker Chatbot" });
@@ -95,9 +166,24 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     const assistantPlaceholder: Message = { role: "assistant", content: "" };
     setMessages((prev) => [...prev, assistantPlaceholder]);
 
-    const toSend = isWelcome
-      ? [{ role: "user", content: "Hello, I'm interested in Parker." }]
-      : newMessages;
+    let toSend: { role: string; content: string }[];
+    if (isWelcome) {
+      if (session) {
+        const fields = [
+          session.name && `name: ${session.name}`,
+          session.email && `email: ${session.email}`,
+          session.phone && `phone: ${session.phone}`,
+          session.moveIn && `move-in: ${session.moveIn}`,
+          session.suiteType && `suite: ${session.suiteType}`,
+          session.budget && `budget: ${session.budget}`,
+        ].filter(Boolean).join(", ");
+        toSend = [{ role: "user", content: `[RETURNING VISITOR — previously provided: ${fields}. Greet them warmly by first name, do not ask for these fields again, ask how you can help today.]` }];
+      } else {
+        toSend = [{ role: "user", content: "Hello, I'm interested in Parker." }];
+      }
+    } else {
+      toSend = newMessages;
+    }
 
     try {
       const [res] = await Promise.all([
@@ -129,7 +215,6 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
       if (fullText.includes("<lead_data>") && !leadCaptured) {
         setLeadCaptured(true);
 
-        // Parse lead data and fire /api/lead
         const match = fullText.match(/<lead_data>([\s\S]*?)<\/lead_data>/);
         if (match) {
           try {
@@ -140,17 +225,39 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
               allMessages
                 .map((m) => `${m.role === "user" ? "Prospect" : "Emma"}: ${m.content}`)
                 .join("\n\n");
+
             fetch("/api/lead", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ ...leadData, source: "Parker Chatbot", transcript }),
-            }).catch(console.error);
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .then((data) => {
+                if (data?.success) {
+                  const sessionData: ParkerChatSession = {
+                    version: 1,
+                    expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000,
+                    name: leadData.name || "",
+                    email: leadData.email || "",
+                    phone: leadData.phone || "",
+                    moveIn: leadData.moveIn || "",
+                    suiteType: leadData.suiteType || "",
+                    budget: leadData.budget || "",
+                    fubPersonId: data.fubPersonId ?? null,
+                  };
+                  try {
+                    localStorage.setItem("parker_chat_session", JSON.stringify(sessionData));
+                  } catch { /* ignore — private browsing */ }
+                  if (data.fubPersonId) setFubPersonId(data.fubPersonId);
+                }
+              })
+              .catch(console.error);
           } catch {
             console.error("Failed to parse lead_data");
           }
         }
 
-        // lead_captured events
+        // Analytics
         window.gtag?.("event", "lead_captured", { event_category: "Parker Chatbot" });
         if (GADS_ID && GADS_CONVERSION_LABEL) {
           window.gtag?.("event", "conversion", { send_to: `${GADS_ID}/${GADS_CONVERSION_LABEL}` });
