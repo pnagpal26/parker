@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendLeadEmail, type LeadData } from "@/lib/resend";
-import { createFUBLead, createFUBNote } from "@/lib/fub";
+import { createFUBLead } from "@/lib/fub";
 
 const BOGUS_EMAIL_DOMAINS = new Set([
   "test.com", "fake.com", "example.com", "mailinator.com",
@@ -64,14 +64,6 @@ export async function POST(req: NextRequest) {
 
     if (!emailOk) console.error("Resend error:", emailResult.status === "rejected" ? emailResult.reason : "null result");
     if (!fubOk) console.error("FUB error:", fubResult.status === "rejected" ? fubResult.reason : "null result");
-
-    // Post transcript as a FUB note if we have a personId and transcript
-    if (fubOk && lead.transcript) {
-      const fubData = fubResult.value as { personId?: number } | null;
-      if (fubData?.personId) {
-        await createFUBNote(fubData.personId, lead.transcript).catch(console.error);
-      }
-    }
 
     const fubData = fubOk ? (fubResult.value as { personId?: number } | null) : null;
     return NextResponse.json({
