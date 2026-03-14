@@ -22,6 +22,10 @@
 
 ~~**FUB note not received (fire-and-forget killed by Vercel)**~~ — *Fixed 2026-03-11. `createFUBNote()` is now `await`ed before the `/api/lead` response is returned.*
 
+~~**Duplicate FUB notes on lead capture**~~ — *Fixed 2026-03-14. `createFUBNote()` removed from `/api/lead`. Notes are now created solely via `sendBeacon → /api/transcript` on panel close, guaranteeing exactly one note per session with the most complete transcript.*
+
+~~**Double `/api/lead` call on every lead capture**~~ — *Fixed 2026-03-14. Both `/api/chat/route.ts` (server-side) and `Chatbot.tsx` (client-side) were independently calling `/api/lead` on `<lead_data>` detection, firing within 50–250ms of each other. Removed the redundant server-side fetch; client-side call is the single source of truth.*
+
 ## Security Considerations
 
 1. **Bot UA filter is weak** — Regex pattern in `app/api/chat/route.ts` can be easily bypassed by setting a browser-like UA. Provides minimal real protection.

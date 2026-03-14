@@ -114,14 +114,22 @@ Both `Nav` and `Hero` call `onOpenChat()` from their CTAs.
 
 ```
 Chatbot → /api/chat (streaming, Claude)
-              ↓ detects <lead_data>
-         /api/lead (POST)
+              ↓ client detects <lead_data> in stream
+         /api/lead (POST, client-side fetch only)
               ↓ parallel
          Resend email → garima@teamnagpal.ca
          FUB POST /v1/events → creates/updates person
-              ↓ on success, get personId
-         FUB POST /v1/notes → full chat transcript
+              ↓ returns personId → stored in localStorage
+
+Panel close / page unload
+         sendBeacon → /api/transcript (POST)
+              ↓
+         FUB POST /v1/notes → full conversation transcript
 ```
+
+> **Important:** `/api/lead` creates the FUB person/event — **no note**. Notes are written exclusively via `sendBeacon → /api/transcript` on panel close or page unload. This guarantees exactly one note per session with the most complete transcript.
+>
+> The `/api/chat` route does **not** call `/api/lead` — only the client does. A server-side fetch was removed (2026-03-14) as it caused double `/api/lead` calls on every lead capture.
 
 **`/api/lead` body:**
 ```json
@@ -138,15 +146,13 @@ Chatbot → /api/chat (streaming, Claude)
 - Bogus email (disposable domain, all-same-char local part) → 422 `{ reason: "bogus_email" }`
 - Bogus phone (all-same digit, sequential, < 7 digits) → 422 `{ reason: "bogus_phone" }`
 
-**FUB note format:**
+**FUB note format** (written by `/api/transcript`, not `/api/lead`):
 ```
 === Parker Chatbot Transcript ===
 
 Prospect: Hi there
 Emma: Welcome to Parker...
 ```
-
-> **Important:** `createFUBNote()` is `await`ed before the response is returned. Fire-and-forget causes Vercel to kill the request before the note fetch completes.
 
 ---
 
