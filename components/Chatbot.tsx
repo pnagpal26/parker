@@ -96,6 +96,11 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
     if (!fubPersonIdRef.current || !leadCapturedRef.current) return;
     // Skip if no new messages since last flush (prevents double-fire from panel close + beforeunload)
     if (messagesRef.current.length <= lastFlushedLengthRef.current) return;
+    // Skip if there are no user messages since the last flush (e.g. returning visitor opened but didn't speak)
+    const hasNewUserMessage = messagesRef.current
+      .slice(lastFlushedLengthRef.current)
+      .some((m) => m.role === "user");
+    if (!hasNewUserMessage) return;
     lastFlushedLengthRef.current = messagesRef.current.length;
     const transcript =
       "=== Parker Chatbot Transcript ===\n\n" +
@@ -209,7 +214,8 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
         });
       }
 
-      if (fullText.includes("<lead_data>") && !leadCaptured) {
+      if (fullText.includes("<lead_data>") && !leadCapturedRef.current) {
+        leadCapturedRef.current = true;
         setLeadCaptured(true);
 
         const match = fullText.match(/<lead_data>([\s\S]*?)<\/lead_data>/);
