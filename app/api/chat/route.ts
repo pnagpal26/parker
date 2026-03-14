@@ -112,31 +112,6 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Check for lead data trigger
-        const leadMatch = fullText.match(/<lead_data>([\s\S]*?)<\/lead_data>/);
-        if (leadMatch) {
-          try {
-            const leadData = JSON.parse(leadMatch[1].trim());
-
-            const transcriptLines = [
-              "=== Parker Chatbot Transcript ===\n",
-              ...messages.map((m: { role: string; content: string }) =>
-                `${m.role === "user" ? "Prospect" : "Emma"}: ${m.content}`
-              ),
-              `Emma: ${fullText.replace(/<lead_data>[\s\S]*?<\/lead_data>/g, "").trim()}`,
-            ];
-            const transcript = transcriptLines.join("\n\n");
-
-            fetch(`${req.nextUrl.origin}/api/lead`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ...leadData, source: "Parker Chatbot", transcript }),
-            }).catch(console.error);
-          } catch (e) {
-            console.error("Failed to parse lead data from chatbot:", e);
-          }
-        }
-
         controller.close();
       },
     });
