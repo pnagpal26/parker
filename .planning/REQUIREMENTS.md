@@ -9,9 +9,9 @@ Requirements for the 5-ad campaign set.
 
 ### Pre-Production
 
-- [ ] **PRE-01**: Fitzrovia CDN photography rights confirmed for paid social ads (with Garima before any production)
+- [x] **PRE-01**: Fitzrovia CDN photography rights confirmed for paid social ads (with Garima before any production)
 - [ ] **PRE-02**: nano-banana CLI flags verified for 1080×1920px output (`nano-banana --help`)
-- [ ] **PRE-03**: RECO-compliant attribution line wording confirmed ("RE/MAX Hallmark Realty" — verify current standard)
+- [x] **PRE-03**: RECO-compliant attribution line wording confirmed ("RE/MAX Hallmark Realty" — verify current standard)
 - [ ] **PRE-04**: Meta Housing Special Ad Category requirements noted in campaign handoff doc
 
 ### Ad Specifications (all 5 ads)
@@ -94,9 +94,9 @@ Requirements for the 5-ad campaign set.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRE-01 | Phase 1 | Pending |
+| PRE-01 | Phase 1 | Complete |
 | PRE-02 | Phase 1 | Pending |
-| PRE-03 | Phase 1 | Pending |
+| PRE-03 | Phase 1 | Complete |
 | PRE-04 | Phase 1 | Pending |
 | SPEC-01 | Phase 2 | Pending |
 | SPEC-02 | Phase 2 | Pending |
