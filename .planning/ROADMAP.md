@@ -31,11 +31,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. nano-banana CLI flags for 1080×1920 PNG output are confirmed working (or Figma-only path is chosen)
   4. Figma canvas is set up at 1080×1920 with safe-zone guides at y=250 and y=1536, Cormorant Garamond and Plus Jakarta Sans loaded
   5. Meta Housing Special Ad Category requirement is noted in a handoff doc stub
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Confirm Fitzrovia photo rights + RECO attribution wording with Garima
-- [ ] 01-02: Verify nano-banana CLI flags and set up Figma canvas template
+- [ ] 01-01-PLAN.md — Document Fitzrovia photo rights confirmation + lock RECO attribution wording
+- [ ] 01-02-PLAN.md — Verify nano-banana CLI for 9:16 generation + write Meta Housing brief + Figma template spec
 
 ### Phase 2: Ad Generation
 **Goal**: All 5 ads are fully composited and visually complete — each ad has a background image, correct brand layer (logo, eyebrow, headline, subhead, CTA button, attribution), and passes a brand consistency check
