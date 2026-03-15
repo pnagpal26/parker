@@ -94,20 +94,52 @@ Requirements for the 5-ad campaign set.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRE-01 to PRE-04 | Phase 1 | Pending |
-| SPEC-01 to SPEC-08 | Phase 2 | Pending |
-| AD1-01 to AD1-05 | Phase 2 | Pending |
-| AD2-01 to AD2-05 | Phase 2 | Pending |
-| AD3-01 to AD3-05 | Phase 2 | Pending |
-| AD4-01 to AD4-05 | Phase 2 | Pending |
-| AD5-01 to AD5-05 | Phase 2 | Pending |
-| HAND-01 to HAND-03 | Phase 3 | Pending |
+| PRE-01 | Phase 1 | Pending |
+| PRE-02 | Phase 1 | Pending |
+| PRE-03 | Phase 1 | Pending |
+| PRE-04 | Phase 1 | Pending |
+| SPEC-01 | Phase 2 | Pending |
+| SPEC-02 | Phase 2 | Pending |
+| SPEC-03 | Phase 2 | Pending |
+| SPEC-04 | Phase 2 | Pending |
+| SPEC-05 | Phase 2 | Pending |
+| SPEC-06 | Phase 2 | Pending |
+| SPEC-07 | Phase 2 | Pending |
+| SPEC-08 | Phase 2 | Pending |
+| AD1-01 | Phase 2 | Pending |
+| AD1-02 | Phase 2 | Pending |
+| AD1-03 | Phase 2 | Pending |
+| AD1-04 | Phase 2 | Pending |
+| AD1-05 | Phase 2 | Pending |
+| AD2-01 | Phase 2 | Pending |
+| AD2-02 | Phase 2 | Pending |
+| AD2-03 | Phase 2 | Pending |
+| AD2-04 | Phase 2 | Pending |
+| AD2-05 | Phase 2 | Pending |
+| AD3-01 | Phase 2 | Pending |
+| AD3-02 | Phase 2 | Pending |
+| AD3-03 | Phase 2 | Pending |
+| AD3-04 | Phase 2 | Pending |
+| AD3-05 | Phase 2 | Pending |
+| AD4-01 | Phase 2 | Pending |
+| AD4-02 | Phase 2 | Pending |
+| AD4-03 | Phase 2 | Pending |
+| AD4-04 | Phase 2 | Pending |
+| AD4-05 | Phase 2 | Pending |
+| AD5-01 | Phase 2 | Pending |
+| AD5-02 | Phase 2 | Pending |
+| AD5-03 | Phase 2 | Pending |
+| AD5-04 | Phase 2 | Pending |
+| AD5-05 | Phase 2 | Pending |
+| HAND-01 | Phase 3 | Pending |
+| HAND-02 | Phase 3 | Pending |
+| HAND-03 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 31 total
-- Mapped to phases: 31
+- v1 requirements: 40 total
+- Mapped to phases: 40
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after initial definition*
+*Last updated: 2026-03-15 after roadmap creation*
