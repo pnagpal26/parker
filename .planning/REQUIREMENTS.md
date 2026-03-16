@@ -16,22 +16,22 @@ Requirements for the 5-ad campaign set.
 
 ### Ad Specifications (all 5 ads)
 
-- [ ] **SPEC-01**: All ads output at 1080×1920px, PNG format, sRGB color space, ≤30MB
-- [ ] **SPEC-02**: All critical content (headline, CTA, attribution) lives within safe zone (y=250px to y=1536px)
-- [ ] **SPEC-03**: Every ad includes "RE/MAX Hallmark Realty" attribution at minimum 22pt, legible against background
-- [ ] **SPEC-04**: Every ad includes Parker logo (white version) in top-left of safe zone
-- [ ] **SPEC-05**: CTA button uses `#E85B3A` orange, sharp corners (no border-radius), white label text
-- [ ] **SPEC-06**: Headline uses Cormorant Garamond, 72–96pt
-- [ ] **SPEC-07**: Subhead and CTA label use Plus Jakarta Sans
-- [ ] **SPEC-08**: Background has dark gradient overlay ensuring text readability (bottom-heavy or full vignette)
+- [x] **SPEC-01**: All ads output at 1080×1920px, PNG format, sRGB color space, ≤30MB
+- [x] **SPEC-02**: All critical content (headline, CTA, attribution) lives within safe zone (y=250px to y=1536px)
+- [x] **SPEC-03**: Every ad includes "RE/MAX Hallmark Realty" attribution at minimum 22pt, legible against background
+- [x] **SPEC-04**: Every ad includes Parker logo (white version) in top-left of safe zone
+- [x] **SPEC-05**: CTA button uses `#E85B3A` orange, sharp corners (no border-radius), white label text
+- [x] **SPEC-06**: Headline uses Cormorant Garamond, 72–96pt
+- [x] **SPEC-07**: Subhead and CTA label use Plus Jakarta Sans
+- [x] **SPEC-08**: Background has dark gradient overlay ensuring text readability (bottom-heavy or full vignette)
 
 ### Ad 1 — Incentives
 
-- [ ] **AD1-01**: Background: LIDO infinity pool or exterior tower (nano-banana or Fitzrovia CDN)
-- [ ] **AD1-02**: Eyebrow: "MOVE IN TODAY" (Jakarta Sans, all-caps, tracked)
-- [ ] **AD1-03**: Headline: "Up to 2 Months Free" (Cormorant Garamond)
-- [ ] **AD1-04**: Subhead: "Net effective from $2,XXX/mo" (one line, Jakarta Sans)
-- [ ] **AD1-05**: CTA: "Claim Your Free Month" (orange sharp-corner button)
+- [x] **AD1-01**: Background: LIDO infinity pool or exterior tower (nano-banana or Fitzrovia CDN)
+- [x] **AD1-02**: Eyebrow: "MOVE IN TODAY" (Jakarta Sans, all-caps, tracked)
+- [x] **AD1-03**: Headline: "Up to 2 Months Free" (Cormorant Garamond)
+- [x] **AD1-04**: Subhead: "Net effective from $2,XXX/mo" (one line, Jakarta Sans)
+- [x] **AD1-05**: CTA: "Claim Your Free Month" (orange sharp-corner button)
 
 ### Ad 2 — Lifestyle / Amenities
 
@@ -98,19 +98,19 @@ Requirements for the 5-ad campaign set.
 | PRE-02 | Phase 1 | Complete |
 | PRE-03 | Phase 1 | Complete |
 | PRE-04 | Phase 1 | Complete |
-| SPEC-01 | Phase 2 | Pending |
-| SPEC-02 | Phase 2 | Pending |
-| SPEC-03 | Phase 2 | Pending |
-| SPEC-04 | Phase 2 | Pending |
-| SPEC-05 | Phase 2 | Pending |
-| SPEC-06 | Phase 2 | Pending |
-| SPEC-07 | Phase 2 | Pending |
-| SPEC-08 | Phase 2 | Pending |
-| AD1-01 | Phase 2 | Pending |
-| AD1-02 | Phase 2 | Pending |
-| AD1-03 | Phase 2 | Pending |
-| AD1-04 | Phase 2 | Pending |
-| AD1-05 | Phase 2 | Pending |
+| SPEC-01 | Phase 2 | Complete |
+| SPEC-02 | Phase 2 | Complete |
+| SPEC-03 | Phase 2 | Complete |
+| SPEC-04 | Phase 2 | Complete |
+| SPEC-05 | Phase 2 | Complete |
+| SPEC-06 | Phase 2 | Complete |
+| SPEC-07 | Phase 2 | Complete |
+| SPEC-08 | Phase 2 | Complete |
+| AD1-01 | Phase 2 | Complete |
+| AD1-02 | Phase 2 | Complete |
+| AD1-03 | Phase 2 | Complete |
+| AD1-04 | Phase 2 | Complete |
+| AD1-05 | Phase 2 | Complete |
 | AD2-01 | Phase 2 | Pending |
 | AD2-02 | Phase 2 | Pending |
 | AD2-03 | Phase 2 | Pending |

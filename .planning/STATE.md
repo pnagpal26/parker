@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-pre-production 01-02-PLAN.md
-last_updated: "2026-03-16T00:17:34.572Z"
+stopped_at: Completed 02-ad-generation 02-01-PLAN.md
+last_updated: "2026-03-16T00:55:59.425Z"
 last_activity: 2026-03-15 — Roadmap created
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 7
+  completed_plans: 3
   percent: 50
 ---
 
@@ -52,6 +52,7 @@ Progress: [█████░░░░░] 50%
 *Updated after each plan completion*
 | Phase 01-pre-production P01 | 1 | 2 tasks | 2 files |
 | Phase 01-pre-production P02 | 10 | 3 tasks | 3 files |
+| Phase 02-ad-generation P01 | 45 | 4 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 01-pre-production]: RECO attribution string locked: 'Garima Nagpal · Team Nagpal · Sales Representative · RE/MAX Hallmark Realty, Brokerage' — must appear verbatim on all 5 ads
 - [Phase 01-pre-production]: Playwright HTML/CSS compositing replaces Figma — fully automated four-stage pipeline (nano-banana → sharp → HTML/CSS → Playwright screenshot)
 - [Phase 01-pre-production]: nano-banana canonical command confirmed: gemini --yolo '/generate [PROMPT] vertical portrait 9:16 ratio no text no people' — no --aspect flag
+- [Phase 02-ad-generation]: Logo height set to 100px (250% of original 40px) per visual QA feedback
+- [Phase 02-ad-generation]: Absolute file:// paths for background + logo in HTML templates avoids relative path issues in Playwright
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T00:00:59.555Z
-Stopped at: Completed 01-pre-production 01-02-PLAN.md
+Last session: 2026-03-16T00:55:59.424Z
+Stopped at: Completed 02-ad-generation 02-01-PLAN.md
 Resume file: None
