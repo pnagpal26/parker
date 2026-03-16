@@ -16,7 +16,7 @@ delivers upload-ready files and the Meta campaign brief to Garima.
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Pre-Production** - Resolve photo rights, compliance, tooling, and Figma template before any creative work (completed 2026-03-16)
-- [ ] **Phase 2: Ad Generation** - Produce all 5 ads — background images + full brand compositing for each
+- [x] **Phase 2: Ad Generation** - Produce all 5 ads — background images + full brand compositing for each (completed 2026-03-16)
 - [ ] **Phase 3: Export + Campaign Handoff** - Final PNG exports and Meta campaign brief for Garima
 
 ## Phase Details
@@ -79,5 +79,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Pre-Production | 2/2 | Complete    | 2026-03-16 |
-| 2. Ad Generation | 4/5 | In Progress|  |
+| 2. Ad Generation | 5/5 | Complete   | 2026-03-16 |
 | 3. Export + Campaign Handoff | 0/2 | Not started | - |

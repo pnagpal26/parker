@@ -59,11 +59,11 @@ Requirements for the 5-ad campaign set.
 
 ### Ad 5 — Conversational / Warm Retargeting
 
-- [ ] **AD5-01**: Background: Warmest model suite interior (most inviting, softest light)
-- [ ] **AD5-02**: Eyebrow: "HAVE QUESTIONS?"
-- [ ] **AD5-03**: Headline: "Emma can help." (Cormorant Garamond)
-- [ ] **AD5-04**: Subhead: "Chat with our leasing team — no pressure, just answers."
-- [ ] **AD5-05**: CTA: "Chat with Emma" (orange sharp-corner button)
+- [x] **AD5-01**: Background: Warmest model suite interior (most inviting, softest light)
+- [x] **AD5-02**: Eyebrow: "HAVE QUESTIONS?"
+- [x] **AD5-03**: Headline: "Emma can help." (Cormorant Garamond)
+- [x] **AD5-04**: Subhead: "Chat with our leasing team — no pressure, just answers."
+- [x] **AD5-05**: CTA: "Chat with Emma" (orange sharp-corner button)
 
 ### Campaign Handoff
 
@@ -126,11 +126,11 @@ Requirements for the 5-ad campaign set.
 | AD4-03 | Phase 2 | Complete |
 | AD4-04 | Phase 2 | Complete |
 | AD4-05 | Phase 2 | Complete |
-| AD5-01 | Phase 2 | Pending |
-| AD5-02 | Phase 2 | Pending |
-| AD5-03 | Phase 2 | Pending |
-| AD5-04 | Phase 2 | Pending |
-| AD5-05 | Phase 2 | Pending |
+| AD5-01 | Phase 2 | Complete |
+| AD5-02 | Phase 2 | Complete |
+| AD5-03 | Phase 2 | Complete |
+| AD5-04 | Phase 2 | Complete |
+| AD5-05 | Phase 2 | Complete |
 | HAND-01 | Phase 3 | Pending |
 | HAND-02 | Phase 3 | Pending |
 | HAND-03 | Phase 3 | Pending |
