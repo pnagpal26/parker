@@ -51,11 +51,11 @@ Requirements for the 5-ad campaign set.
 
 ### Ad 4 — Urgency / Limited Availability
 
-- [ ] **AD4-01**: Background: Hero tower exterior (dramatic, dark sky preferred)
-- [ ] **AD4-02**: Eyebrow: "LIMITED AVAILABILITY"
-- [ ] **AD4-03**: Headline: "Move in today." (Cormorant Garamond — short, punchy)
-- [ ] **AD4-04**: Subhead: "Select suites available now. Incentives on."
-- [ ] **AD4-05**: CTA: "Move In Today" (orange sharp-corner button)
+- [x] **AD4-01**: Background: Hero tower exterior (dramatic, dark sky preferred)
+- [x] **AD4-02**: Eyebrow: "LIMITED AVAILABILITY"
+- [x] **AD4-03**: Headline: "Move in today." (Cormorant Garamond — short, punchy)
+- [x] **AD4-04**: Subhead: "Select suites available now. Incentives on."
+- [x] **AD4-05**: CTA: "Move In Today" (orange sharp-corner button)
 
 ### Ad 5 — Conversational / Warm Retargeting
 
@@ -121,11 +121,11 @@ Requirements for the 5-ad campaign set.
 | AD3-03 | Phase 2 | Complete |
 | AD3-04 | Phase 2 | Complete |
 | AD3-05 | Phase 2 | Complete |
-| AD4-01 | Phase 2 | Pending |
-| AD4-02 | Phase 2 | Pending |
-| AD4-03 | Phase 2 | Pending |
-| AD4-04 | Phase 2 | Pending |
-| AD4-05 | Phase 2 | Pending |
+| AD4-01 | Phase 2 | Complete |
+| AD4-02 | Phase 2 | Complete |
+| AD4-03 | Phase 2 | Complete |
+| AD4-04 | Phase 2 | Complete |
+| AD4-05 | Phase 2 | Complete |
 | AD5-01 | Phase 2 | Pending |
 | AD5-02 | Phase 2 | Pending |
 | AD5-03 | Phase 2 | Pending |

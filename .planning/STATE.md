@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-ad-generation 02-03-PLAN.md
-last_updated: "2026-03-16T01:14:37.660Z"
+stopped_at: Completed 02-ad-generation 02-04-PLAN.md
+last_updated: "2026-03-16T01:19:21.123Z"
 last_activity: 2026-03-15 — Roadmap created
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 50
 ---
 
@@ -55,6 +55,7 @@ Progress: [█████░░░░░] 50%
 | Phase 02-ad-generation P01 | 45 | 4 tasks | 8 files |
 | Phase 02-ad-generation P02 | 7 | 2 tasks | 4 files |
 | Phase 02-ad-generation P03 | 8 | 2 tasks | 4 files |
+| Phase 02-ad-generation P04 | 3 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 - [Phase 02-ad-generation]: KitchenAid® rendered as &#174; HTML entity for reliable display in Playwright screenshots
 - [Phase 02-ad-generation]: Italic headline pattern: <em> inside .headline class - existing CSS handles it, no new CSS needed
 - [Phase 02-ad-generation]: Non-italic headline for Ad 3: plain .headline (no em tag) for authoritative location ad tone
+- [Phase 02-ad-generation]: Ad 4 headline is plain roman (no italic/em) — immediacy and authority for urgency tone
+- [Phase 02-ad-generation]: No unit counts or countdown timers in Ad 4 — factually grounded urgency only per Meta Housing ad policy
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T01:14:37.658Z
-Stopped at: Completed 02-ad-generation 02-03-PLAN.md
+Last session: 2026-03-16T01:19:21.121Z
+Stopped at: Completed 02-ad-generation 02-04-PLAN.md
 Resume file: None
