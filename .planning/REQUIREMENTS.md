@@ -43,11 +43,11 @@ Requirements for the 5-ad campaign set.
 
 ### Ad 3 — Location
 
-- [ ] **AD3-01**: Background: Exterior tower or Yonge + Eglinton neighbourhood context
-- [ ] **AD3-02**: Eyebrow: "TORONTO'S MIDTOWN"
-- [ ] **AD3-03**: Headline: "Steps from the best of Yonge + Eglinton." (Cormorant Garamond)
-- [ ] **AD3-04**: Subhead: "Suites from studios to 3-bedroom."
-- [ ] **AD3-05**: CTA: "Explore Suites" (orange sharp-corner button)
+- [x] **AD3-01**: Background: Exterior tower or Yonge + Eglinton neighbourhood context
+- [x] **AD3-02**: Eyebrow: "TORONTO'S MIDTOWN"
+- [x] **AD3-03**: Headline: "Steps from the best of Yonge + Eglinton." (Cormorant Garamond)
+- [x] **AD3-04**: Subhead: "Suites from studios to 3-bedroom."
+- [x] **AD3-05**: CTA: "Explore Suites" (orange sharp-corner button)
 
 ### Ad 4 — Urgency / Limited Availability
 
@@ -116,11 +116,11 @@ Requirements for the 5-ad campaign set.
 | AD2-03 | Phase 2 | Complete |
 | AD2-04 | Phase 2 | Complete |
 | AD2-05 | Phase 2 | Complete |
-| AD3-01 | Phase 2 | Pending |
-| AD3-02 | Phase 2 | Pending |
-| AD3-03 | Phase 2 | Pending |
-| AD3-04 | Phase 2 | Pending |
-| AD3-05 | Phase 2 | Pending |
+| AD3-01 | Phase 2 | Complete |
+| AD3-02 | Phase 2 | Complete |
+| AD3-03 | Phase 2 | Complete |
+| AD3-04 | Phase 2 | Complete |
+| AD3-05 | Phase 2 | Complete |
 | AD4-01 | Phase 2 | Pending |
 | AD4-02 | Phase 2 | Pending |
 | AD4-03 | Phase 2 | Pending |
