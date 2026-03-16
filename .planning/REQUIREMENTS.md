@@ -35,11 +35,11 @@ Requirements for the 5-ad campaign set.
 
 ### Ad 2 — Lifestyle / Amenities
 
-- [ ] **AD2-01**: Background: Amenities or model suite interior (Fitzrovia CDN preferred)
-- [ ] **AD2-02**: Eyebrow: "PARKER AT YONGE + EGLINTON"
-- [ ] **AD2-03**: Headline: "Forget what you know about rental living." (Cormorant Garamond italic)
-- [ ] **AD2-04**: Subhead: "Rooftop pool. KitchenAid® suite. 272,000 sq ft of amenities."
-- [ ] **AD2-05**: CTA: "Book a Private Tour" (orange sharp-corner button)
+- [x] **AD2-01**: Background: Amenities or model suite interior (Fitzrovia CDN preferred)
+- [x] **AD2-02**: Eyebrow: "PARKER AT YONGE + EGLINTON"
+- [x] **AD2-03**: Headline: "Forget what you know about rental living." (Cormorant Garamond italic)
+- [x] **AD2-04**: Subhead: "Rooftop pool. KitchenAid® suite. 272,000 sq ft of amenities."
+- [x] **AD2-05**: CTA: "Book a Private Tour" (orange sharp-corner button)
 
 ### Ad 3 — Location
 
@@ -111,11 +111,11 @@ Requirements for the 5-ad campaign set.
 | AD1-03 | Phase 2 | Complete |
 | AD1-04 | Phase 2 | Complete |
 | AD1-05 | Phase 2 | Complete |
-| AD2-01 | Phase 2 | Pending |
-| AD2-02 | Phase 2 | Pending |
-| AD2-03 | Phase 2 | Pending |
-| AD2-04 | Phase 2 | Pending |
-| AD2-05 | Phase 2 | Pending |
+| AD2-01 | Phase 2 | Complete |
+| AD2-02 | Phase 2 | Complete |
+| AD2-03 | Phase 2 | Complete |
+| AD2-04 | Phase 2 | Complete |
+| AD2-05 | Phase 2 | Complete |
 | AD3-01 | Phase 2 | Pending |
 | AD3-02 | Phase 2 | Pending |
 | AD3-03 | Phase 2 | Pending |
