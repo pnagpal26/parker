@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-pre-production 01-01-PLAN.md
-last_updated: "2026-03-15T23:35:45.312Z"
+stopped_at: Completed 01-pre-production 01-02-PLAN.md
+last_updated: "2026-03-16T00:00:59.556Z"
 last_activity: 2026-03-15 — Roadmap created
 progress:
   total_phases: 3
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
   percent: 50
 ---
 
@@ -51,6 +51,7 @@ Progress: [█████░░░░░] 50%
 
 *Updated after each plan completion*
 | Phase 01-pre-production P01 | 1 | 2 tasks | 2 files |
+| Phase 01-pre-production P02 | 10 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting current work:
 - [Research]: Fitzrovia photography authorization for paid ads is LOW confidence — must confirm with Garima before any production begins
 - [Phase 01-pre-production]: Fitzrovia photo rights: verbal authorization recorded, written email pending — Phase 2 constrained to AI backgrounds until written rights received
 - [Phase 01-pre-production]: RECO attribution string locked: 'Garima Nagpal · Team Nagpal · Sales Representative · RE/MAX Hallmark Realty, Brokerage' — must appear verbatim on all 5 ads
+- [Phase 01-pre-production]: Playwright HTML/CSS compositing replaces Figma — fully automated four-stage pipeline (nano-banana → sharp → HTML/CSS → Playwright screenshot)
+- [Phase 01-pre-production]: nano-banana canonical command confirmed: gemini --yolo '/generate [PROMPT] vertical portrait 9:16 ratio no text no people' — no --aspect flag
 
 ### Pending Todos
 
@@ -79,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T23:35:45.311Z
-Stopped at: Completed 01-pre-production 01-01-PLAN.md
+Last session: 2026-03-16T00:00:59.555Z
+Stopped at: Completed 01-pre-production 01-02-PLAN.md
 Resume file: None
