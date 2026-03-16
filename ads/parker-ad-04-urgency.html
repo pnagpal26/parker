@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1920px; overflow: hidden; background: #131311; position: relative; }
+    .bg { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+    .overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom,
+        rgba(19,19,17,0.15) 0%,
+        rgba(19,19,17,0.55) 55%,
+        rgba(19,19,17,0.85) 100%);
+    }
+    .safe-zone {
+      position: absolute; left: 90px; top: 250px;
+      width: 900px; height: 1286px;
+      display: flex; flex-direction: column;
+    }
+    .logo { margin-top: 20px; height: 100px; width: auto; object-fit: contain; object-position: left center; }
+    .content { margin-top: auto; margin-bottom: 120px; }
+    .accent-rule { width: 40px; height: 2px; background: #E85B3A; margin-bottom: 16px; }
+    .eyebrow {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500;
+      font-size: 26px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-bottom: 20px;
+    }
+    .headline {
+      font-family: 'Cormorant Garamond', serif; font-weight: 400;
+      font-size: 108px; line-height: 1.0; letter-spacing: -0.01em;
+      color: #FFFEFB; margin-bottom: 28px;
+    }
+    .headline em { font-style: italic; }
+    .subhead {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 300;
+      font-size: 30px; line-height: 1.45; color: rgba(255,255,255,0.80);
+      margin-bottom: 48px; max-width: 780px;
+    }
+    .cta-button {
+      display: inline-block; background: #E85B3A; color: #FFFEFB;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;
+      font-size: 26px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 22px 48px; border-radius: 0; text-decoration: none; width: fit-content;
+    }
+    .attribution {
+      position: absolute; left: 90px; bottom: 384px; width: 900px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 400;
+      font-size: 28px; letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.50); text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <img class="bg" src="file:///Users/puneetnagpal/development/parker/ad-backgrounds/ad-04-background.png" alt="">
+  <div class="overlay"></div>
+  <div class="safe-zone">
+    <img class="logo" src="file:///Users/puneetnagpal/development/parker/ads/parker-logo.svg" alt="Parker">
+    <div class="content">
+      <div class="accent-rule"></div>
+      <div class="eyebrow">LIMITED AVAILABILITY</div>
+      <h1 class="headline">Move in today.</h1>
+      <p class="subhead">Select suites available now. Incentives on.</p>
+      <div class="cta-button">Move In Today</div>
+    </div>
+  </div>
+  <div class="attribution">
+    Garima Nagpal · Team Nagpal · Sales Representative · RE/MAX Hallmark Realty, Brokerage
+  </div>
+</body>
+</html>
