@@ -48,14 +48,14 @@ Plans:
   4. Ad 4 (Urgency) exists with dramatic exterior background, "Move in today." headline, "Move In Today" CTA
   5. Ad 5 (Conversational) exists with warm interior background, "Emma can help." headline, "Chat with Emma" CTA
   6. All 5 ads share: Parker logo white top-left within safe zone, RE/MAX Hallmark Realty attribution at minimum 22pt, CTA button in #E85B3A with sharp corners
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 02-01: Ad 1 — Incentives (background + compositing)
-- [ ] 02-02: Ad 2 — Lifestyle/Amenities (background + compositing)
-- [ ] 02-03: Ad 3 — Location (background + compositing)
-- [ ] 02-04: Ad 4 — Urgency (background + compositing)
-- [ ] 02-05: Ad 5 — Conversational (background + compositing)
+- [ ] 02-01-PLAN.md — Infrastructure setup (sharp, playwright, shared scripts, local logo) + Ad 1 Incentives
+- [ ] 02-02-PLAN.md — Ad 2 Lifestyle/Amenities (background + compositing)
+- [ ] 02-03-PLAN.md — Ad 3 Location (background + compositing)
+- [ ] 02-04-PLAN.md — Ad 4 Urgency (background + compositing)
+- [ ] 02-05-PLAN.md — Ad 5 Conversational (background + compositing) + final 5-ad QA
 
 ### Phase 3: Export + Campaign Handoff
 **Goal**: Upload-ready PNG files are exported and labelled, and Garima has everything she needs to launch the campaign in Meta Ads Manager
@@ -79,5 +79,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Pre-Production | 2/2 | Complete    | 2026-03-16 |
-| 2. Ad Generation | 0/5 | Not started | - |
+| 2. Ad Generation | 0/5 | Planning complete | - |
 | 3. Export + Campaign Handoff | 0/2 | Not started | - |
