@@ -89,7 +89,7 @@
 ## Analytics & Tracking
 
 **Meta Pixel (Facebook/Instagram):**
-- Pixel ID: `NEXT_PUBLIC_META_PIXEL_ID` (env var, production: `3255042007990556`)
+- Pixel ID: `NEXT_PUBLIC_META_PIXEL_ID` (env var, production: `1928979144653218`)
 - Injected: `app/layout.tsx` via `<Script strategy="afterInteractive">` (only if env var set)
 - Events fired:
   - `PageView` (automatic on every page load)

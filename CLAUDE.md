@@ -198,7 +198,7 @@ All scripts are conditionally rendered — if the env var is absent, the script 
 
 | Service | ID |
 |---------|----|
-| Meta Pixel | `3255042007990556` |
+| Meta Pixel | `1928979144653218` |
 | GA4 | `G-3EFNE69Y89` |
 | Google Ads | `AW-860175244` |
 | Google Ads Conversion Label | `zFHzCN6Q0IYcEIz3lJoD` |

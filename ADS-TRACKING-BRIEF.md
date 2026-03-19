@@ -2,7 +2,7 @@
 
 ## Meta Pixel
 
-**Pixel ID:** `3255042007990556`
+**Pixel ID:** `1928979144653218`
 
 The pixel is installed on `parker.affordablecondos.ca` and fires the following standard events:
 
@@ -12,7 +12,7 @@ The pixel is installed on `parker.affordablecondos.ca` and fires the following s
 | `ViewContent` | User opens the chatbot ("Chat with Emma") |
 | `Lead` | User completes the chatbot lead capture flow |
 
-No additional pixel installation is needed — it's already live. You can verify in **Meta Events Manager → Data Sources → `3255042007990556`**.
+No additional pixel installation is needed — it's already live. You can verify in **Meta Events Manager → Data Sources → `1928979144653218`**.
 
 ---
 
