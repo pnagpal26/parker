@@ -116,45 +116,72 @@ Both `Nav` and `Hero` call `onOpenChat()` from their CTAs.
 
 ```
 Chatbot → /api/chat (streaming, Claude)
-              ↓ client detects <lead_data> in stream
-         /api/lead (POST, client-side fetch only)
-              ↓ parallel
-         Resend email → garima@teamnagpal.ca
-         FUB POST /v1/events → creates/updates person
-              ↓ returns personId → stored in localStorage
+              ↓ client detects <contact_captured> (name+email confirmed)
+         /api/lead (POST, partial:true) → FUB person created early, no email, no note
+              ↓ returns personId → stored in fubPersonIdRef + localStorage parker_transcript
 
-Panel close / page unload
+              ↓ transcript snapshot saved to localStorage after every assistant message
+
+              ↓ client detects <lead_data> (all 6 fields)
+         /api/lead (POST, full) → parallel:
+              Resend email → garima@teamnagpal.ca
+              FUB POST /v1/events → updates person
+              FUB POST /v1/notes → "[Captured at lead collection]" note (fire-and-forget)
+
+Panel hide (visibilitychange) / page unload (beforeunload) / panel close
          sendBeacon → /api/transcript (POST)
-              ↓
-         FUB POST /v1/notes → full conversation transcript
+              ↓ reads personId from fubPersonIdRef, falls back to localStorage
+              FUB POST /v1/notes → full conversation transcript
 ```
 
-> **Important:** `/api/lead` creates the FUB person/event — **no note**. Notes are written exclusively via `sendBeacon → /api/transcript` on panel close or page unload. This guarantees exactly one note per session with the most complete transcript.
+> **Two FUB notes per full capture:** `/api/lead` writes `[Captured at lead collection]` immediately; `/api/transcript` writes the full transcript on close. This is intentional — guarantees at least one note even if sendBeacon fails.
+>
+> **`/api/lead` partial flag:** `{ partial: true }` skips Resend email and transcript note. Only name + email are required. Phone bogus check is skipped (phone not yet collected).
 >
 > The `/api/chat` route does **not** call `/api/lead` — only the client does. A server-side fetch was removed (2026-03-14) as it caused double `/api/lead` calls on every lead capture.
 
 **`/api/lead` body:**
 ```json
-{
-  "name": "", "email": "", "phone": "",
-  "moveIn": "", "suiteType": "", "budget": "",
-  "source": "Parker Chatbot",
-  "transcript": "=== Parker Chatbot Transcript ===\n\nProspect: ...\nEmma: ..."
-}
+// Full capture
+{ "name": "", "email": "", "phone": "", "moveIn": "", "suiteType": "", "budget": "",
+  "source": "Parker Chatbot", "transcript": "=== Parker Chatbot Transcript ===\n\n..." }
+
+// Partial capture (name+email only — fires on <contact_captured>)
+{ "name": "", "email": "", "source": "Parker Chatbot", "partial": true }
 ```
+
+**`/api/lead` response:** `{ success, email, fub, fubPersonId }`
 
 **`/api/lead` validation (before hitting FUB/Resend):**
 - Missing email → 400
 - Bogus email (disposable domain, all-same-char local part) → 422 `{ reason: "bogus_email" }`
-- Bogus phone (all-same digit, sequential, < 7 digits) → 422 `{ reason: "bogus_phone" }`
+- Bogus phone (all-same digit, sequential, < 7 digits) → 422 `{ reason: "bogus_phone" }` (skipped for partial)
 
-**FUB note format** (written by `/api/transcript`, not `/api/lead`):
-```
-=== Parker Chatbot Transcript ===
+**FUB notes written per session (up to 2):**
+1. `[Captured at lead collection]` — written by `/api/lead` on full capture, synchronously
+2. Full transcript — written by `/api/transcript` via sendBeacon on close/unload
 
-Prospect: Hi there
-Emma: Welcome to Parker...
-```
+---
+
+## Emma's XML Tags (stream output)
+
+| Tag | When emitted | Client action |
+|-----|-------------|---------------|
+| `<contact_captured>{name,email}</contact_captured>` | Name + email confirmed | Fire partial `/api/lead`; `cleanContent()` strips from display |
+| `<lead_data>{all 6 fields}</lead_data>` | All 6 fields collected | Fire full `/api/lead`; `cleanContent()` strips from display |
+
+`partialLeadFiredRef` prevents `<contact_captured>` from firing multiple times (same pattern as `leadCapturedRef` for `<lead_data>`).
+
+---
+
+## LocalStorage Keys
+
+| Key | Contents | Expires |
+|-----|----------|---------|
+| `parker_chat_session` | Full lead data + fubPersonId (set after full capture) | 24h |
+| `parker_transcript` | `{ version, expiresAt, personId, messages[] }` — snapshot after every assistant response | 24h |
+
+`parker_transcript` is the sendBeacon fallback — `flushTranscript()` reads personId from it if `fubPersonIdRef` is not yet set (async race on quick tab close). Do NOT clear it after sendBeacon — let 24h expiry handle cleanup.
 
 ---
 
