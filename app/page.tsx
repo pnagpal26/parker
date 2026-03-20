@@ -7,6 +7,7 @@ import Stats from "@/components/Stats";
 import Incentives from "@/components/Incentives";
 import About from "@/components/About";
 import Amenities from "@/components/Amenities";
+import FloorPlans from "@/components/FloorPlans";
 import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 import Chatbot from "@/components/Chatbot";
@@ -22,6 +23,7 @@ export default function Home() {
       <Incentives onOpenChat={() => setChatOpen(true)} />
       <About />
       <Amenities />
+      <FloorPlans />
       <Gallery />
       <Footer />
       <Chatbot open={chatOpen} setOpen={setChatOpen} />
