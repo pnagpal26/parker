@@ -67,7 +67,7 @@ export default function Footer() {
               className="text-sm font-medium"
               style={{ color: "rgba(255,255,255,0.75)", fontFamily: "var(--font-body)" }}
             >
-              Garima Nagpal
+              Garima Nagpal · Broker
             </p>
             <p
               className="mt-0.5 text-sm"

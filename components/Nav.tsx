@@ -65,10 +65,10 @@ export default function Nav({ onOpenChat }: { onOpenChat: () => void }) {
 
           {/* Desktop links */}
           <div className="hidden items-center gap-8 md:flex">
-            {["Amenities", "Gallery"].map((label) => (
+            {["Amenities", "Floor Plans", "Gallery"].map((label) => (
               <button
                 key={label}
-                onClick={() => scrollTo(label.toLowerCase())}
+                onClick={() => scrollTo(label.toLowerCase().replace(" ", ""))}
                 className="text-xs font-medium tracking-widest uppercase transition-colors duration-200"
                 style={{ color: scrolled ? "var(--ink-muted)" : "rgba(255,255,255,0.75)" }}
               >
@@ -138,10 +138,10 @@ export default function Nav({ onOpenChat }: { onOpenChat: () => void }) {
           pointerEvents: menuOpen ? "all" : "none",
         }}
       >
-        {["Amenities", "Gallery"].map((label) => (
+        {["Amenities", "Floor Plans", "Gallery"].map((label) => (
           <button
             key={label}
-            onClick={() => scrollTo(label.toLowerCase())}
+            onClick={() => scrollTo(label.toLowerCase().replace(" ", ""))}
             className="display-italic text-5xl"
             style={{ color: "var(--ink)" }}
           >
