@@ -98,6 +98,8 @@ Both `Nav` and `Hero` call `onOpenChat()` from their CTAs.
 - On collecting all 6, outputs `<lead_data>{...}</lead_data>` which auto-fires lead capture
 - Signs off: *"I'll pass your details along to our team — Garima will reach out personally to confirm your tour time."*
 
+**Writing guardrails:** Keep rules behavioural, not prescriptive. Overly mechanical rules (e.g. "prefix every rent with X") cause robotic repetition. Write intent + example of natural usage instead.
+
 **Guardrails (in system prompt):**
 1. Stay on topic — Parker only
 2. Never fabricate — defer to Garima if unsure
@@ -333,6 +335,13 @@ CSS: `.reveal` fades + slides up; `.clip-reveal` uses `clip-path: inset()` for a
 All from `https://fitzrovia.ca/app/uploads/2021/05/`.
 Allowed via `remotePatterns` in `next.config.ts`.
 All paths in `PARKER_IMAGES` in `lib/parker-data.ts`.
+
+When adding images from a **new domain**, add it to `remotePatterns` in `next.config.ts` first.
+Floor plan images are hosted on `https://assets.rentsync.com` (already added).
+
+## Source of Truth for Content
+
+Before implementing floor plans, pricing, or suite data, verify against **https://www.parkerlife.ca/floorplans** (official site). Each floor plan has 2–3 images from `assets.rentsync.com` — always use `images: []` array, never a single `image` field.
 
 ---
 
