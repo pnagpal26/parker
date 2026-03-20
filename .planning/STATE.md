@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 Phase: 1 of 3 (Pre-Production)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-03-15 — Roadmap created
+Last activity: 2026-03-19 - Completed quick task 260319-rqf: Add floor plans section to website and update Emma chatbot with floor plan awareness
 
 Progress: [█████░░░░░] 50%
 
@@ -95,6 +95,12 @@ None yet.
 - **[Phase 1 gate]** Fitzrovia photo rights for paid Instagram ads are unconfirmed — different licensing scope than landing page use. Cannot use CDN photos in paid ads until Garima confirms.
 - **[Phase 1 gate]** RECO attribution wording must be confirmed before compositing any ad.
 - **[Phase 2 flag]** nano-banana CLI flags for 1080×1920 are MEDIUM confidence — validate with `--help` before generating backgrounds.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260319-rqf | Add floor plans section to website and update Emma chatbot with floor plan awareness | 2026-03-19 | b919e75 | [260319-rqf-add-floor-plans-section-to-website-and-u](.planning/quick/260319-rqf-add-floor-plans-section-to-website-and-u/) |
 
 ## Session Continuity
 
