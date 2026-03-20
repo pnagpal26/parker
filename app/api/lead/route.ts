@@ -10,9 +10,11 @@ const BOGUS_EMAIL_DOMAINS = new Set([
 
 function isBogusPhone(phone: string): boolean {
   const digits = phone.replace(/\D/g, "");
-  if (digits.length < 7) return true;
-  if (/^(\d)\1+$/.test(digits)) return true; // all same digit: 1111111111
-  if (digits === "1234567890" || digits === "0987654321") return true;
+  // Strip leading country code 1 if 11 digits
+  const normalized = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+  if (normalized.length !== 10) return true;
+  if (/^(\d)\1+$/.test(normalized)) return true; // all same digit: 1111111111
+  if (normalized === "1234567890" || normalized === "0987654321") return true;
   return false;
 }
 
@@ -28,10 +30,16 @@ function isBogusEmail(email: string): boolean {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    // Normalize phone: strip all non-digits, drop leading country code 1 if 11 digits
+    const rawDigits = (body.phone || "").replace(/\D/g, "");
+    const normalizedPhone = rawDigits.length === 11 && rawDigits.startsWith("1")
+      ? rawDigits.slice(1)
+      : rawDigits;
+
     const lead: LeadData = {
       name: body.name || "Unknown",
       email: body.email || "",
-      phone: body.phone || "",
+      phone: normalizedPhone,
       moveIn: body.moveIn,
       suiteType: body.suiteType,
       budget: body.budget,

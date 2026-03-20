@@ -1,0 +1,107 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-03-20T01:54:50.575Z",
+  "phase": "quick",
+  "phase_name": "Lead Capture Reliability — 3-Fix Implementation",
+  "phase_dir": "ad-hoc (no phase directory — quick task work)",
+  "plan": 1,
+  "task": 2,
+  "total_tasks": 6,
+  "status": "paused",
+  "completed_tasks": [
+    {
+      "id": 1,
+      "name": "Fix 1a — System prompt: add <contact_captured> tag instruction",
+      "status": "done",
+      "commit": "uncommitted",
+      "file": "lib/parker-data.ts",
+      "notes": "Emma now outputs <contact_captured>{name, email}</contact_captured> the moment name + email are confirmed. Placed before the existing <lead_data> instructions in CONVERSATION RULES."
+    },
+    {
+      "id": 2,
+      "name": "Fix 1 (banner) — move setLeadCaptured + analytics into data?.success block",
+      "status": "done",
+      "commit": "uncommitted",
+      "file": "components/Chatbot.tsx",
+      "notes": "Banner and analytics now only fire after /api/lead returns success:true. leadCapturedRef.current still set early to prevent re-entry."
+    },
+    {
+      "id": 3,
+      "name": "Fix phone validator — hard 10-digit enforcement + normalization",
+      "status": "done",
+      "commit": "uncommitted",
+      "file": "app/api/lead/route.ts",
+      "notes": "Strips non-digits, drops leading country code 1 if 11 digits, requires exactly 10 digits. Also normalizes phone before storing."
+    },
+    {
+      "id": 4,
+      "name": "Fix session bug — don't set leadCaptured from stored session",
+      "status": "done",
+      "commit": "uncommitted",
+      "file": "components/Chatbot.tsx",
+      "notes": "Only restores fubPersonId from session, not leadCaptured. flushTranscript now gates on fubPersonId only."
+    }
+  ],
+  "remaining_tasks": [
+    {
+      "id": 5,
+      "name": "Fix 1b — Chatbot.tsx: detect <contact_captured> tag, fire partial /api/lead",
+      "status": "not_started",
+      "details": "After stream completes, check for <contact_captured> in fullText. If found and !partialLeadFiredRef.current, parse {name, email}, fire /api/lead with partial:true. Store returned fubPersonId. cleanContent() must also strip <contact_captured> tags."
+    },
+    {
+      "id": 6,
+      "name": "Fix 2 — /api/lead: write FUB transcript note synchronously on full lead capture",
+      "status": "not_started",
+      "details": "In app/api/lead/route.ts, after createFUBLead succeeds and body.partial is falsy, call createFUBNote(personId, transcript) fire-and-forget. Prefix note with '[Captured at lead collection]' to distinguish from sendBeacon full transcript."
+    },
+    {
+      "id": 7,
+      "name": "Fix 3 — Chatbot.tsx: localStorage transcript buffer + visibilitychange",
+      "status": "not_started",
+      "details": "Three sub-changes: (1) saveTranscriptToStorage() helper — write messages+personId to localStorage key 'parker_transcript' after every assistant message, preserving existing personId if present. (2) loadTranscriptFromStorage() helper — read, validate 24h expiry, return {messages, personId}. (3) flushTranscript() reads from localStorage (falls back to refs), add visibilitychange listener alongside beforeunload. Do NOT delete from localStorage after sendBeacon — let 24h expiry handle cleanup."
+    }
+  ],
+  "blockers": [],
+  "human_actions_pending": [
+    {
+      "action": "Clear localStorage and test full flow after implementation",
+      "context": "Use Playwright browser_evaluate to clear parker_chat_session and parker_transcript before testing",
+      "blocking": false
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Use <contact_captured> tag (not client-side NLP) to detect name+email capture",
+      "rationale": "Reliable — same pattern as <lead_data>. NLP detection of email in stream is fragile.",
+      "phase": "quick"
+    },
+    {
+      "decision": "Partial lead fires without transcript note; full lead writes transcript note synchronously",
+      "rationale": "Partial lead has minimal conversation — no value in a note. Full lead has the complete capture conversation.",
+      "phase": "quick"
+    },
+    {
+      "decision": "Don't delete localStorage after sendBeacon — let 24h expiry handle it",
+      "rationale": "sendBeacon is fire-and-forget — can't confirm success. Fix 2 is the guaranteed baseline; Fix 3 is best-effort enhancement.",
+      "phase": "quick"
+    },
+    {
+      "decision": "partialLeadFiredRef prevents double-firing <contact_captured> across multiple messages",
+      "rationale": "Same pattern as leadCapturedRef for <lead_data>.",
+      "phase": "quick"
+    },
+    {
+      "decision": "saveTranscriptToStorage preserves existing personId if already stored",
+      "rationale": "personId arrives async from partial lead API call — subsequent saves shouldn't overwrite a valid personId with null.",
+      "phase": "quick"
+    }
+  ],
+  "uncommitted_files": [
+    "lib/parker-data.ts",
+    "components/Chatbot.tsx",
+    "app/api/lead/route.ts"
+  ],
+  "next_action": "Implement Fix 1b in Chatbot.tsx: add partialLeadFiredRef, update cleanContent to strip <contact_captured>, detect tag after stream, fire partial /api/lead. Then Fix 2 in app/api/lead/route.ts. Then Fix 3 localStorage in Chatbot.tsx.",
+  "context_notes": "Paid traffic is live on parker.affordablecondos.ca. This work is critical — any lead lost from a paid click is money wasted. The three fixes form a layered safety net: Fix 1 catches leads before all 6 fields, Fix 2 guarantees transcript in FUB at capture time, Fix 3 makes sendBeacon reliable via localStorage buffer. All changes are in uncommitted modified files — nothing is lost, just not committed yet."
+}

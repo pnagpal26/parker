@@ -93,7 +93,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   useEffect(() => { leadCapturedRef.current = leadCaptured; }, [leadCaptured]);
 
   function flushTranscript() {
-    if (!fubPersonIdRef.current || !leadCapturedRef.current) return;
+    if (!fubPersonIdRef.current) return;
     // Skip if no new messages since last flush (prevents double-fire from panel close + beforeunload)
     if (messagesRef.current.length <= lastFlushedLengthRef.current) return;
     // Skip if there are no user messages since the last flush (e.g. returning visitor opened but didn't speak)
@@ -130,7 +130,9 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
 
       const session = loadSession();
       if (session) {
-        setLeadCaptured(true);
+        // Only restore fubPersonId for transcript purposes.
+        // Do NOT set leadCaptured — that flag is reserved for captures in THIS session.
+        // Setting it from a stale session blocks new lead capture and shows a false banner.
         if (session.fubPersonId) setFubPersonId(session.fubPersonId);
       }
       sendMessage("", true, session);
@@ -215,8 +217,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
       }
 
       if (fullText.includes("<lead_data>") && !leadCapturedRef.current) {
-        leadCapturedRef.current = true;
-        setLeadCaptured(true);
+        leadCapturedRef.current = true; // prevent re-entry — set early regardless of API outcome
 
         const match = fullText.match(/<lead_data>([\s\S]*?)<\/lead_data>/);
         if (match) {
@@ -237,9 +238,17 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
               .then((r) => (r.ok ? r.json() : null))
               .then((data) => {
                 if (data?.success) {
+                  // Banner and analytics only fire on confirmed API success
+                  setLeadCaptured(true);
+                  window.gtag?.("event", "lead_captured", { event_category: "Parker Chatbot" });
+                  if (GADS_ID && GADS_CONVERSION_LABEL) {
+                    window.gtag?.("event", "conversion", { send_to: `${GADS_ID}/${GADS_CONVERSION_LABEL}` });
+                  }
+                  window.fbq?.("track", "Lead", { content_name: "Parker Suite Inquiry" });
+
                   const sessionData: ParkerChatSession = {
                     version: 1,
-                    expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000,
+                    expiresAt: Date.now() + 24 * 60 * 60 * 1000,
                     name: leadData.name || "",
                     email: leadData.email || "",
                     phone: leadData.phone || "",
@@ -259,13 +268,6 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
             console.error("Failed to parse lead_data");
           }
         }
-
-        // Analytics
-        window.gtag?.("event", "lead_captured", { event_category: "Parker Chatbot" });
-        if (GADS_ID && GADS_CONVERSION_LABEL) {
-          window.gtag?.("event", "conversion", { send_to: `${GADS_ID}/${GADS_CONVERSION_LABEL}` });
-        }
-        window.fbq?.("track", "Lead", { content_name: "Parker Suite Inquiry" });
       }
     } catch {
       setMessages((prev) => {
