@@ -212,7 +212,7 @@ export default function Incentives({ onOpenChat }: { onOpenChat: () => void }) {
               onClick={onOpenChat}
               className="w-full py-4 text-xs font-medium tracking-widest uppercase transition-all duration-300"
               style={{ background: "var(--orange)", color: "white" }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#c94d2f")}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange-hover)")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange)")}
             >
               Chat with Emma

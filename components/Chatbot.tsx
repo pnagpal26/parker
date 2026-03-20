@@ -425,7 +425,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
               Emma · Team Nagpal
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="block h-1.5 w-1.5 rounded-full" style={{ background: "#2ecc71" }} />
+              <span className="block h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
               <span
                 className="text-xs"
                 style={{ color: "var(--ink-muted)", fontFamily: "var(--font-body)" }}
@@ -487,7 +487,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
                 className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5"
                 style={{
                   background: "rgba(46,204,113,0.1)",
-                  color: "#27ae60",
+                  color: "var(--success-dark)",
                   border: "1px solid rgba(46,204,113,0.25)",
                   fontFamily: "var(--font-body)",
                 }}

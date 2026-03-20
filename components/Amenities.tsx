@@ -11,12 +11,23 @@ export default function Amenities() {
   const sectionRef = useScrollReveal();
   const images = PARKER_IMAGES.amenityCarousel;
 
-  useEffect(() => {
+  const startAutoplay = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
     }, 3500);
+  };
+
+  useEffect(() => {
+    startAutoplay();
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images.length]);
+
+  const go = (idx: number) => {
+    setCurrent(idx);
+    startAutoplay(); // reset timer on manual nav
+  };
 
   return (
     <section
@@ -104,12 +115,44 @@ export default function Amenities() {
                 </div>
               ))}
 
+              {/* Prev / Next arrows */}
+              <button
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center transition-opacity duration-200 hidden sm:flex"
+                style={{
+                  width: 40, height: 40,
+                  background: "rgba(250,249,247,0.85)",
+                  backdropFilter: "blur(6px)",
+                  borderRadius: "50%",
+                  opacity: current === 0 ? 0.35 : 0.85,
+                  cursor: current === 0 ? "default" : "pointer",
+                }}
+                onClick={() => current > 0 && go(current - 1)}
+                aria-label="Previous image"
+              >
+                <svg width="16" height="16" fill="none" stroke="var(--ink)" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
+              </button>
+              <button
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center transition-opacity duration-200 hidden sm:flex"
+                style={{
+                  width: 40, height: 40,
+                  background: "rgba(250,249,247,0.85)",
+                  backdropFilter: "blur(6px)",
+                  borderRadius: "50%",
+                  opacity: current === images.length - 1 ? 0.35 : 0.85,
+                  cursor: current === images.length - 1 ? "default" : "pointer",
+                }}
+                onClick={() => current < images.length - 1 && go(current + 1)}
+                aria-label="Next image"
+              >
+                <svg width="16" height="16" fill="none" stroke="var(--ink)" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
+              </button>
+
               {/* Dots */}
               <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2 z-10">
                 {images.map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => setCurrent(i)}
+                    onClick={() => go(i)}
                     className="transition-all duration-300"
                     style={{
                       height: 4,

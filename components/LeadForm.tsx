@@ -225,7 +225,7 @@ export default function LeadForm() {
                 padding: "16px 48px",
                 fontFamily: "var(--font-body)",
               }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#c94d2f")}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange-hover)")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange)")}
             >
               {status === "loading" ? (

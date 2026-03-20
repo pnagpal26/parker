@@ -58,7 +58,7 @@ export default function Hero({ onOpenChat }: { onOpenChat: () => void }) {
       {/* Bottom: incentives panel */}
       <div
         className="lg:hidden absolute bottom-0 left-0 right-0 flex flex-col"
-        style={{ height: "52%", background: "#0A0A0A" }}
+        style={{ height: "52%", background: "var(--dark)" }}
       >
         {/* Header row */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
@@ -80,7 +80,7 @@ export default function Hero({ onOpenChat }: { onOpenChat: () => void }) {
             onClick={onOpenChat}
             className="shrink-0 px-4 py-2.5 text-xs font-medium tracking-widest uppercase text-white transition-all duration-200"
             style={{ background: "var(--orange)", fontFamily: "var(--font-body)" }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#c94d2f")}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange-hover)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange)")}
           >
             Book Tour
@@ -93,7 +93,7 @@ export default function Hero({ onOpenChat }: { onOpenChat: () => void }) {
             <li
               key={i}
               className="flex items-start gap-2.5 px-4 py-3"
-              style={{ background: "#0A0A0A" }}
+              style={{ background: "var(--dark)" }}
             >
               <span
                 className="mt-1.5 shrink-0 block h-1 w-3"
@@ -186,7 +186,7 @@ export default function Hero({ onOpenChat }: { onOpenChat: () => void }) {
             onClick={onOpenChat}
             className="group flex items-center gap-3 text-white text-xs font-medium tracking-widest uppercase transition-all duration-300"
             style={{ background: "var(--orange)", padding: "14px 28px" }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#c94d2f")}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange-hover)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--orange)")}
           >
             Book a Private Tour

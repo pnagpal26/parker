@@ -79,6 +79,24 @@ export default function FloorPlans() {
         </div>
 
         {/* Floor plan cards grid */}
+        {filtered.length === 0 && (
+          <div className="reveal py-16 text-center">
+            <p
+              className="text-sm"
+              style={{ color: "var(--ink-muted)", fontFamily: "var(--font-body)" }}
+            >
+              No {activeCategory} floor plans currently listed.{" "}
+              <button
+                className="underline underline-offset-2 transition-colors duration-200 hover:opacity-70"
+                style={{ color: "var(--orange)", fontFamily: "var(--font-body)" }}
+                onClick={() => setActiveCategory("All")}
+              >
+                View all
+              </button>
+              {" "}or chat with Emma for availability.
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((plan, i) => (
             <div
@@ -93,7 +111,7 @@ export default function FloorPlans() {
                 {/* Floor plan image — clickable */}
                 <button
                   className="relative block w-full aspect-[3/4] cursor-zoom-in"
-                  style={{ background: "#f5f5f3" }}
+                  style={{ background: "var(--surface-neutral)" }}
                   onClick={() => setLightbox({ plan, index: 0 })}
                   aria-label={`View ${plan.name} floor plan enlarged`}
                 >
@@ -183,7 +201,7 @@ export default function FloorPlans() {
           </button>
 
           {/* Main image */}
-          <div className="relative w-full" style={{ aspectRatio: "3/4", background: "#f5f5f3" }}>
+          <div className="relative w-full" style={{ aspectRatio: "3/4", background: "var(--surface-neutral)" }}>
             <Image
               src={lightbox.plan.images[lightbox.index]}
               alt={`${lightbox.plan.name} — image ${lightbox.index + 1}`}
