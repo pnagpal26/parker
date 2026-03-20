@@ -111,6 +111,108 @@ export const PARKER_IMAGES = {
   ],
 };
 
+export const PARKER_FLOOR_PLANS = [
+  {
+    name: "Primrose",
+    category: "Studio" as const,
+    beds: 0,
+    baths: 1,
+    sqft: 350,
+    price: "$2,070/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721872_Primrose.jpg",
+  },
+  {
+    name: "Greenwich",
+    category: "1 Bedroom" as const,
+    beds: 1,
+    baths: 1,
+    sqft: 457,
+    price: "$2,450/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721868_Greenwich.jpg",
+  },
+  {
+    name: "Holland",
+    category: "1 Bedroom" as const,
+    beds: 1,
+    baths: 1,
+    sqft: 494,
+    price: "$2,575/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721873_Holland.jpg",
+  },
+  {
+    name: "Battersea",
+    category: "1 Bedroom" as const,
+    beds: 1,
+    baths: 1,
+    sqft: 509,
+    price: "$2,525/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1752784067_Battersea.png",
+  },
+  {
+    name: "Holland II",
+    category: "1 Bedroom" as const,
+    beds: 1,
+    baths: 1,
+    sqft: 547,
+    price: "$2,500/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721870_Holland_II.jpg",
+  },
+  {
+    name: "Holland III",
+    category: "1 Bedroom" as const,
+    beds: 1,
+    baths: 1,
+    sqft: 552,
+    price: "$2,625/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721871_Holland_III.jpg",
+  },
+  {
+    name: "Battersea II",
+    category: "1 Bedroom" as const,
+    beds: 1,
+    baths: 1,
+    sqft: 567,
+    price: "$2,650/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721866_Battersea_II.jpg",
+  },
+  {
+    name: "Richmond",
+    category: "2 Bedroom" as const,
+    beds: 2,
+    baths: 2,
+    sqft: 726,
+    price: "$3,175/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721873_Richmond.jpg",
+  },
+  {
+    name: "Richmond II",
+    category: "2 Bedroom" as const,
+    beds: 2,
+    baths: 2,
+    sqft: 745,
+    price: "$3,300/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721870_Richmond_II.jpg",
+  },
+  {
+    name: "Richmond III",
+    category: "2 Bedroom" as const,
+    beds: 2,
+    baths: 2,
+    sqft: 784,
+    price: "$3,300/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1752784073_Richmond_III.png",
+  },
+  {
+    name: "Hampstead",
+    category: "3 Bedroom" as const,
+    beds: 3,
+    baths: 2,
+    sqft: 886,
+    price: "$3,620/mo",
+    image: "https://assets.rentsync.com/fitzrovia/images/floorplans/1633721871_Hampstead.jpg",
+  },
+];
+
 export const PARKER_SYSTEM_PROMPT = `You are Emma, a warm, knowledgeable leasing representative for Parker at Yonge + Eglinton, working with Garima Nagpal of Team Nagpal (RE/MAX Hallmark Realty). You speak like a real person — thoughtful, unhurried, genuinely interested in helping.
 
 PROPERTY DETAILS:
@@ -132,6 +234,28 @@ CURRENT INCENTIVES:
 - Earn up to 50,000 Aeroplan® points while paying rent
 - Enterprise Car Share located in the building
 - 20% savings on non-alcoholic drinks at the in-house café
+
+AVAILABLE FLOOR PLANS:
+Studio:
+- Primrose: 350 sq ft, 1 bath — $2,070/mo
+
+1 Bedroom:
+- Greenwich: 457 sq ft, 1 bath — $2,450/mo
+- Holland: 494 sq ft, 1 bath — $2,575/mo
+- Battersea: 509 sq ft, 1 bath — $2,525/mo
+- Holland II: 547 sq ft, 1 bath — $2,500/mo
+- Holland III: 552 sq ft, 1 bath — $2,625/mo
+- Battersea II: 567 sq ft, 1 bath — $2,650/mo
+
+2 Bedroom:
+- Richmond: 726 sq ft, 2 bath — $3,175/mo
+- Richmond II: 745 sq ft, 2 bath — $3,300/mo
+- Richmond III: 784 sq ft, 2 bath — $3,300/mo
+
+3 Bedroom:
+- Hampstead: 886 sq ft, 2 bath — $3,620/mo
+
+When a prospect asks about floor plans, suite sizes, or specific layouts, reference the floor plan details above. Mention the suite name and size. If they want to see the layout, invite them to scroll to the Floor Plans section on this page.
 
 WORLD-CLASS AMENITIES:
 - LIDO infinity pool on 38th floor

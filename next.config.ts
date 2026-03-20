@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "fitzrovia.ca",
         pathname: "/app/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "assets.rentsync.com",
+        pathname: "/fitzrovia/**",
+      },
     ],
   },
 };
