@@ -42,7 +42,38 @@ function loadSession(): ParkerChatSession | null {
 }
 
 function cleanContent(text: string): string {
-  return text.replace(/<lead_data>[\s\S]*?<\/lead_data>/g, "").trim();
+  return text
+    .replace(/<lead_data>[\s\S]*?<\/lead_data>/g, "")
+    .replace(/<contact_captured>[\s\S]*?<\/contact_captured>/g, "")
+    .trim();
+}
+
+function saveTranscriptToStorage(msgs: Message[], personId: number | null) {
+  try {
+    let storedPersonId: number | null = null;
+    try {
+      const existing = localStorage.getItem("parker_transcript");
+      if (existing) storedPersonId = JSON.parse(existing).personId ?? null;
+    } catch { /* ignore */ }
+    localStorage.setItem("parker_transcript", JSON.stringify({
+      version: 1,
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+      personId: storedPersonId ?? personId,
+      messages: msgs,
+    }));
+  } catch { /* ignore — private browsing */ }
+}
+
+function loadTranscriptFromStorage(): { messages: Message[]; personId: number | null } | null {
+  try {
+    const raw = localStorage.getItem("parker_transcript");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed.version !== 1 || parsed.expiresAt < Date.now()) return null;
+    return { messages: parsed.messages ?? [], personId: parsed.personId ?? null };
+  } catch {
+    return null;
+  }
 }
 
 const DOTS = (
@@ -80,6 +111,7 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   const inputRef = useRef<HTMLInputElement>(null);
   const initialized = useRef(false);
   const chatStartedFired = useRef(false);
+  const partialLeadFiredRef = useRef(false);
 
   // Refs for use in event listeners / sendBeacon (always up-to-date)
   const fubPersonIdRef = useRef<number | null>(null);
@@ -93,8 +125,11 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
   useEffect(() => { leadCapturedRef.current = leadCaptured; }, [leadCaptured]);
 
   function flushTranscript() {
-    if (!fubPersonIdRef.current) return;
-    // Skip if no new messages since last flush (prevents double-fire from panel close + beforeunload)
+    // personId: live ref first (most up-to-date), fall back to localStorage (handles async race on quick close)
+    const stored = loadTranscriptFromStorage();
+    const personId = fubPersonIdRef.current ?? stored?.personId ?? null;
+    if (!personId) return;
+    // Skip if no new messages since last flush (prevents double-fire from panel close + beforeunload/visibilitychange)
     if (messagesRef.current.length <= lastFlushedLengthRef.current) return;
     // Skip if there are no user messages since the last flush (e.g. returning visitor opened but didn't speak)
     const hasNewUserMessage = messagesRef.current
@@ -102,23 +137,32 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
       .some((m) => m.role === "user");
     if (!hasNewUserMessage) return;
     lastFlushedLengthRef.current = messagesRef.current.length;
+    // Use stored messages as transcript body — they are saved after each complete response and may be more reliable
+    const msgs = stored?.messages?.length ? stored.messages : messagesRef.current;
     const transcript =
       "=== Parker Chatbot Transcript ===\n\n" +
-      messagesRef.current
+      msgs
         .map((m) => `${m.role === "user" ? "Prospect" : "Emma"}: ${m.content}`)
         .join("\n\n");
     navigator.sendBeacon(
       "/api/transcript",
-      new Blob([JSON.stringify({ personId: fubPersonIdRef.current, transcript })], {
+      new Blob([JSON.stringify({ personId, transcript })], {
         type: "application/json",
       })
     );
   }
 
-  // Flush on page unload
+  // Flush on page unload and tab hide (visibilitychange is more reliable on mobile/Safari)
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") flushTranscript();
+    };
     window.addEventListener("beforeunload", flushTranscript);
-    return () => window.removeEventListener("beforeunload", flushTranscript);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("beforeunload", flushTranscript);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -216,6 +260,45 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
         });
       }
 
+      // Build complete message list — reused for transcript and localStorage
+      const currentMessages: Message[] = [
+        ...(isWelcome ? [] : newMessages),
+        { role: "assistant" as const, content: cleanContent(fullText) },
+      ];
+
+      // Fix 3: Save transcript snapshot to localStorage after each complete response
+      saveTranscriptToStorage(currentMessages, fubPersonIdRef.current);
+
+      // Fix 1b: Early contact capture — detect name+email before full lead_data fires
+      if (fullText.includes("<contact_captured>") && !partialLeadFiredRef.current) {
+        partialLeadFiredRef.current = true;
+        const ccMatch = fullText.match(/<contact_captured>([\s\S]*?)<\/contact_captured>/);
+        if (ccMatch) {
+          try {
+            const partial = JSON.parse(ccMatch[1]);
+            if (partial.email) {
+              fetch("/api/lead", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: partial.name || "", email: partial.email, source: "Parker Chatbot", partial: true }),
+              })
+                .then((r) => (r.ok ? r.json() : null))
+                .then((data) => {
+                  if (data?.fubPersonId) {
+                    setFubPersonId(data.fubPersonId);
+                    // Update localStorage now that we have a personId
+                    saveTranscriptToStorage(messagesRef.current, data.fubPersonId);
+                  }
+                })
+                .catch(console.error);
+            }
+          } catch {
+            console.error("Failed to parse contact_captured");
+          }
+        }
+      }
+
+      // Full lead capture
       if (fullText.includes("<lead_data>") && !leadCapturedRef.current) {
         leadCapturedRef.current = true; // prevent re-entry — set early regardless of API outcome
 
@@ -223,10 +306,9 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
         if (match) {
           try {
             const leadData = JSON.parse(match[1]);
-            const allMessages = [...(isWelcome ? [] : newMessages), { role: "assistant", content: cleanContent(fullText) }];
             const transcript =
               "=== Parker Chatbot Transcript ===\n\n" +
-              allMessages
+              currentMessages
                 .map((m) => `${m.role === "user" ? "Prospect" : "Emma"}: ${m.content}`)
                 .join("\n\n");
 

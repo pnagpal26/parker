@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendLeadEmail, type LeadData } from "@/lib/resend";
-import { createFUBLead } from "@/lib/fub";
+import { createFUBLead, createFUBNote } from "@/lib/fub";
 
 const BOGUS_EMAIL_DOMAINS = new Set([
   "test.com", "fake.com", "example.com", "mailinator.com",
@@ -62,23 +62,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, reason: "bogus_phone" }, { status: 422 });
     }
 
+    const isPartial = !!body.partial;
+
     const [emailResult, fubResult] = await Promise.allSettled([
-      sendLeadEmail(lead),
+      isPartial ? Promise.resolve(null) : sendLeadEmail(lead),
       createFUBLead(lead),
     ]);
 
-    const emailOk = emailResult.status === "fulfilled";
+    const emailOk = !isPartial && emailResult.status === "fulfilled" && emailResult.value !== null;
     const fubOk = fubResult.status === "fulfilled" && fubResult.value !== null;
 
-    if (!emailOk) console.error("Resend error:", emailResult.status === "rejected" ? emailResult.reason : "null result");
-    if (!fubOk) console.error("FUB error:", fubResult.status === "rejected" ? fubResult.reason : "null result");
+    if (!isPartial && !emailOk) console.error("Resend error:", emailResult.status === "rejected" ? (emailResult as PromiseRejectedResult).reason : "null result");
+    if (!fubOk) console.error("FUB error:", fubResult.status === "rejected" ? (fubResult as PromiseRejectedResult).reason : "null result");
 
     const fubData = fubOk ? (fubResult.value as { personId?: number } | null) : null;
+    const fubPersonId = fubData?.personId ?? null;
+
+    // Fix 2: Write transcript note synchronously on full lead capture (not partial)
+    // This guarantees a note in FUB even if sendBeacon fails later
+    if (fubOk && fubPersonId && !isPartial && lead.transcript) {
+      createFUBNote(fubPersonId, `[Captured at lead collection]\n\n${lead.transcript}`).catch(console.error);
+    }
+
     return NextResponse.json({
       success: true,
       email: emailOk,
       fub: fubOk,
-      fubPersonId: fubData?.personId ?? null,
+      fubPersonId,
     });
   } catch (error) {
     console.error("Lead API error:", error);
