@@ -77,8 +77,8 @@ Both `Nav` and `Hero` call `onOpenChat()` from their CTAs.
 | Export | Contents |
 |--------|----------|
 | `PARKER_INFO` | Building name, address, tagline, stats, amenities list, suite types |
-| `PARKER_PRICING` | 4 suite tiers with list price, net effective, free months |
-| `PARKER_INCENTIVES` | 6 incentive items with icon key + text |
+| `PARKER_PRICING` | 4 suite tiers with list price, net effective, free months badge |
+| `PARKER_INCENTIVES` | 6 incentive items with icon key + text (used by Incentives.tsx "What's Included" list — **not** Hero) |
 | `PARKER_IMAGES` | All image URLs (fitzrovia.ca CDN) |
 | `PARKER_SYSTEM_PROMPT` | Full Claude system prompt for Emma |
 
@@ -288,6 +288,8 @@ Two completely separate layouts — no shared markup:
 - Left: PARKER wordmark + tagline + "Book a Private Tour" button
 - Right: frosted glass panel — "Move In / Today" + 6 incentives list + "Chat with Emma to book your tour →"
 
+> **Note:** Hero uses a **local** `INCENTIVES` array (top of `Hero.tsx`) with `{ label, sub }` fields — it does **not** import `PARKER_INCENTIVES`. Update Hero and `lib/parker-data.ts` separately when incentive copy changes.
+
 ### Nav (`components/Nav.tsx`)
 
 - Logo: `h-[42px] w-36` (50% larger than original), `sizes="144px"` on the Image
@@ -305,8 +307,10 @@ Two completely separate layouts — no shared markup:
 
 Displayed between Stats and About. `id="incentives"` for anchor linking. Contains:
 - 4 pricing cards — net effective is the hero number, list price is secondary fine print
-- "What's Included" list with 6 perks + icons
+- "What's Included" list with 6 perks + icons (sourced from `PARKER_INCENTIVES`)
 - "Book a Private Tour" CTA panel → "Chat with Emma" button
+
+**Current incentive offer (as of 2026-03-20):** Two lease-term options — 1 month free on a 12-month lease, or 2 months free on a 14-month lease — available on all suite types. NER is calculated as `list × 12 ÷ 14` for the 2-month offer.
 
 ### Gallery (`components/Gallery.tsx`)
 
