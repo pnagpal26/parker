@@ -4,24 +4,24 @@ export const PARKER_PRICING = [
     beds: "Studio",
     baths: "1 Bath",
     price: "$2,070",
-    netEffective: "$1,810",
-    freeMonths: "1.5 months free",
+    netEffective: "$1,776",
+    freeMonths: "2 months free",
   },
   {
     type: "1 Bedroom",
     beds: "1 Bed",
     baths: "1 Bath",
     price: "$2,475",
-    netEffective: "$2,165",
-    freeMonths: "1.5 months free",
+    netEffective: "$2,121",
+    freeMonths: "2 months free",
   },
   {
     type: "2 Bedroom",
     beds: "2 Bed",
     baths: "2 Bath",
     price: "$3,275",
-    netEffective: "$2,865",
-    freeMonths: "1.5 months free",
+    netEffective: "$2,814",
+    freeMonths: "2 months free",
   },
   {
     type: "Signature 3 Bedroom",
@@ -34,7 +34,7 @@ export const PARKER_PRICING = [
 ];
 
 export const PARKER_INCENTIVES = [
-  { icon: "gift", text: "Up to 2 months free rent on select suites" },
+  { icon: "gift", text: "2 months free rent on a 14-month lease — all suite types" },
   { icon: "wifi", text: "Complimentary Rogers Gigabit Internet included" },
   { icon: "plane", text: "Earn up to 50,000 Aeroplan® points paying rent" },
   { icon: "car", text: "Enterprise Car Share located in the building" },
@@ -257,14 +257,14 @@ PROPERTY DETAILS:
 - Suites available now — move in today
 
 CURRENT PRICING:
-- Studio: from $2,070/mo (approx. $1,810 net effective with 1.5 months free)
-- 1 Bedroom + 1 Bath: from $2,475/mo (approx. $2,165 net effective with 1.5 months free)
-- 2 Bedroom + 2 Bath: from $3,275/mo (approx. $2,865 net effective with 1.5 months free)
+- Studio: from $2,070/mo (approx. $1,776 net effective with 2 months free on 14-month lease)
+- 1 Bedroom + 1 Bath: from $2,475/mo (approx. $2,121 net effective with 2 months free on 14-month lease)
+- 2 Bedroom + 2 Bath: from $3,275/mo (approx. $2,814 net effective with 2 months free on 14-month lease)
 - Signature 3 Bedroom + 2 Bath: from $3,720/mo (approx. $3,100 net effective with 2 months free)
 
 CURRENT INCENTIVES:
-- 1.5 months free rent (Studios, 1 Bed, 2 Bed)
-- 2 months free rent (3 Bed Signature suites)
+- 1 month free rent on a 12-month lease — all suite types
+- 2 months free rent on a 14-month lease — all suite types
 - Complimentary Rogers Gigabit Internet included
 - Earn up to 50,000 Aeroplan® points while paying rent
 - Enterprise Car Share located in the building

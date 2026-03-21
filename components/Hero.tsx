@@ -4,8 +4,8 @@ import Image from "next/image";
 import { PARKER_IMAGES, PARKER_INFO } from "@/lib/parker-data";
 
 const INCENTIVES = [
-  { label: "1.5 months free rent", sub: "Studios, 1 Bed & 2 Bed" },
-  { label: "2 months free rent", sub: "Signature 3 Bed suites" },
+  { label: "1 month free rent", sub: "All suites, 12-month lease" },
+  { label: "2 months free rent", sub: "All suites, 14-month lease" },
   { label: "Rogers Gigabit Internet", sub: "Complimentary, included" },
   { label: "50,000 Aeroplan® points", sub: "Earn while paying rent" },
   { label: "Enterprise Car Share", sub: "Located in the building" },
