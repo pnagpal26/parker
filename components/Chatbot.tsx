@@ -288,6 +288,8 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
                     setFubPersonId(data.fubPersonId);
                     // Update localStorage now that we have a personId
                     saveTranscriptToStorage(messagesRef.current, data.fubPersonId);
+                    // Fire pixel Lead event exactly when FUB person is created
+                    window.fbq?.("track", "Lead", { content_name: "Parker Suite Inquiry" });
                   }
                 })
                 .catch(console.error);
@@ -326,7 +328,6 @@ export default function Chatbot({ open, setOpen }: { open: boolean; setOpen: (v:
                   if (GADS_ID && GADS_CONVERSION_LABEL) {
                     window.gtag?.("event", "conversion", { send_to: `${GADS_ID}/${GADS_CONVERSION_LABEL}` });
                   }
-                  window.fbq?.("track", "Lead", { content_name: "Parker Suite Inquiry" });
 
                   const sessionData: ParkerChatSession = {
                     version: 1,
